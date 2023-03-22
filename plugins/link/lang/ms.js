@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'ms', {
 	acccessKey: 'Kunci Akses',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'ms', {
 		title: 'Ciri-ciri Pautan',
 		name: 'Nama Pautan',
 		errorName: 'Sila taip nama pautan',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Remove Anchor'
 	},
 	anchorId: 'dengan menggunakan ID elemen',
 	anchorName: 'dengan menggunakan nama pautan',
 	charset: 'Linked Resource Charset',
 	cssClasses: 'Kelas-kelas Stylesheet',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'Alamat E-Mail',
 	emailBody: 'Isi Kandungan Mesej',
 	emailSubject: 'Subjek Mesej',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'ms', {
 	noAnchors: '(Tiada pautan terdapat dalam dokumen ini)',
 	noEmail: 'Sila taip alamat e-mail',
 	noUrl: 'Sila taip sambungan URL',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<lain>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Bergantungan (Netscape)',
 	popupFeatures: 'Ciri Tetingkap Popup',
 	popupFullScreen: 'Skrin Penuh (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'ms', {
 	toAnchor: 'Pautan dalam muka surat ini',
 	toEmail: 'E-Mail',
 	toUrl: 'URL',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Masukkan/Sunting Sambungan',
 	type: 'Jenis Sambungan',
 	unlink: 'Buang Sambungan',

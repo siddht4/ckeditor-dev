@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,dom */
+/* bender-tags: editor,dom */
 /* global appendDomObjectTests */
 
 var getInnerHtml = bender.tools.getInnerHtml,
@@ -26,6 +26,12 @@ bender.test( appendDomObjectTests(
 		return new CKEDITOR.dom.element( document.getElementById( id ) );
 	},
 	{
+		_should: {
+			ignore: {
+				test_isIdentical2: CKEDITOR.env.webkit && !CKEDITOR.env.chrome
+			}
+		},
+
 		test_$: function() {
 			var element = newElement( document.getElementById( 'test1' ) );
 			assert.areSame( document.getElementById( 'test1' ), element.$ );
@@ -144,7 +150,7 @@ bender.test( appendDomObjectTests(
 			assert.areEqual( 'Test appendText', element.$.text );
 		},
 
-		// #13232
+		// https://dev.ckeditor.com/ticket/13232
 		'test appendText to link': function() {
 			var element = newElement( 'a' );
 			element.appendText( '@' );
@@ -448,7 +454,7 @@ bender.test( appendDomObjectTests(
 			assert.areEqual( null, bender.tools.getAttribute( element, 'tabindex' ) );
 		},
 
-		// Test set and retrieve 'checked' attribute value. (#4527)
+		// Test set and retrieve 'checked' attribute value. (https://dev.ckeditor.com/ticket/4527)
 		test_getAttribute_checked: function() {
 			var unchecked1 = new CKEDITOR.dom.element.createFromHtml( '<input type="checkbox" />' ),
 				checked1 = new CKEDITOR.dom.element.createFromHtml( '<input type="checkbox" checked="checked" />' ),
@@ -676,7 +682,7 @@ bender.test( appendDomObjectTests(
 			assert.isFalse( doc.getById( 'invisible2' ).isVisible() );
 		},
 
-		// #7070
+		// https://dev.ckeditor.com/ticket/7070
 		test_getBogus: function() {
 			// Test padding block bogus BR for non-IEs.
 			if ( CKEDITOR.env.ie )
@@ -906,7 +912,7 @@ bender.test( appendDomObjectTests(
 		},
 
 		/**
-		 * Test copy the 'checked' attribute. (#4527)
+		 * Test copy the 'checked' attribute. (https://dev.ckeditor.com/ticket/4527)
 		 */
 		test_copyAttributes_checked: function() {
 			var original1 = new CKEDITOR.dom.element.createFromHtml( '<input type="checkbox" checked="checked" />' ),
@@ -927,7 +933,7 @@ bender.test( appendDomObjectTests(
 
 			element.renameNode( 'p' );
 
-			// Check precisely (#8663).
+			// Check precisely (https://dev.ckeditor.com/ticket/8663).
 			assert.areEqual( 'p', element.getName(), 'getName()' );
 			assert.areSame( 'p', element.$.tagName.toLowerCase(), '$.tagName' );
 
@@ -972,7 +978,7 @@ bender.test( appendDomObjectTests(
 			assert.isTrue( element1.isIdentical( element2 ) );
 		},
 
-		// #8527
+		// https://dev.ckeditor.com/ticket/8527
 		'test empty anchor editable': function() {
 			assert.isFalse( doc.getById( 'empty_anchor_1' ).isEditable() );
 			assert.isFalse( doc.getById( 'empty_anchor_2' ).isEditable() );
@@ -1139,6 +1145,106 @@ bender.test( appendDomObjectTests(
 			} ) );
 
 			assert.areSame( 1, preventDefaultCalled, 'preventDefault was called' );
+		},
+
+		'test setSize': function() {
+			// (https://dev.ckeditor.com/ticket/16753).
+			// For high dpi displays, things like border will often have a fraction of a pixel.
+			var elem = CKEDITOR.dom.element.createFromHtml( '<div style="height: 50px; border: 0.9px solid black"></div>' ),
+				realBorderWidth,
+				expectedWidth;
+
+			function round( num ) {
+				// Decrease precision of calculations (#3188).
+				return Math.floor( num * 100 ) / 100;
+			}
+
+			doc.getBody().append( elem );
+
+			// Actually due to different devicePixelRatio it will not necessairly be 1 pixel, it might be less.
+			realBorderWidth = parseFloat( elem.getComputedStyle( 'border-left-width' ) );
+			realBorderWidth = Math.round( realBorderWidth * 1000 ) / 1000;
+
+			expectedWidth = 200 - ( 2 * realBorderWidth );
+			// Browsers still will do some reasonable rounding on width, with an exception to IE8 which will round to full pixels.
+			expectedWidth = CKEDITOR.env.ie && CKEDITOR.env.version == 8 ? Math.round( expectedWidth ) : round( expectedWidth );
+
+			elem.setSize( 'width', 200, true );
+
+			assert.areSame( expectedWidth, round( parseFloat( elem.$.style.width ) ), 'Computed width' );
+		},
+
+		// (#2975)
+		'test fireEventHandler with mouseup': function() {
+			var link = CKEDITOR.dom.element.createFromHtml(
+				'<a href="#" onmouseup="this.setAttribute(\'data-button\',event.button);return false;">Link</a>' ),
+				rightMouseButton = CKEDITOR.tools.normalizeMouseButton( CKEDITOR.MOUSE_BUTTON_RIGHT );
+
+			link.fireEventHandler( 'mouseup', {
+				button: rightMouseButton
+			} );
+
+			assert.areSame( String( rightMouseButton ), link.getAttribute( 'data-button' ),
+				'Proper event data was passed' );
+		},
+
+		// (#2975)
+		'test fireEventHandler with mouseup in iframe': function() {
+			var iframe = CKEDITOR.dom.element.createFromHtml( '<iframe src="about:blank"></iframe>' );
+
+			iframe.once( 'load', function() {
+				resume( function() {
+					var document = new CKEDITOR.dom.document( iframe.$.contentWindow.document ),
+						link = new CKEDITOR.dom.element( 'a', document ),
+						rightMouseButton = CKEDITOR.tools.normalizeMouseButton( CKEDITOR.MOUSE_BUTTON_RIGHT );
+
+					link.setAttribute( 'onmouseup',
+						'this.setAttribute(\'data-button\',event.button);return false;' );
+					document.getBody().append( link );
+
+					link.fireEventHandler( 'mouseup', {
+						button: rightMouseButton
+					} );
+
+					assert.areSame( String( rightMouseButton ), link.getAttribute( 'data-button' ),
+						'Proper event data was passed' );
+				} );
+			} );
+
+			CKEDITOR.document.getBody().append( iframe );
+			wait();
+		},
+
+		// (#2975)
+		'test fireEventHandler with click on element without onclick': function() {
+			var link = CKEDITOR.dom.element.createFromHtml(
+				'<a href="#">Link</a>' ),
+				leftMouseButton = CKEDITOR.tools.normalizeMouseButton( CKEDITOR.MOUSE_BUTTON_LEFT, true );
+
+			link.once( 'click', function( evt ) {
+				this.setAttribute( 'data-button', evt.data.$.button );
+				evt.data.preventDefault();
+			} );
+			link.fireEventHandler( 'click', {
+				button: leftMouseButton
+			} );
+
+			assert.areSame( String( leftMouseButton ), link.getAttribute( 'data-button' ),
+				'Proper event data was passed' );
+		},
+
+		'test getClientSize': function() {
+			var element = new CKEDITOR.dom.element( 'div' );
+
+			element.$ = {
+				clientWidth: 100,
+				clientHeight: 100
+			};
+
+			var size = element.getClientSize();
+
+			assert.areSame( 100, size.width );
+			assert.areSame( 100, size.height );
 		}
 	}
 ) );

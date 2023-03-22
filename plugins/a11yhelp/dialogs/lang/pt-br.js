@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'pt-br', {
@@ -12,13 +12,13 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'pt-br', {
 		items: [
 			{
 			name: 'Barra de Ferramentas do Editor',
-			legend: 'Pressione ${toolbarFocus} para navegar para a barra de ferramentas. Mova para o anterior ou próximo grupo de ferramentas com TAB e SHIFT+TAB. Mova para o anterior ou próximo botão com SETA PARA DIREITA or SETA PARA ESQUERDA. Pressione ESPAÇO ou ENTER para ativar o botão da barra de ferramentas.'
+			legend: 'Pressione ${toolbarFocus} para navegar para a barra de ferramentas. mova para a próxima barra de ferramentas ou a anterior com TAB e SHIFT+TAB. mova para o próximo botão ou o anterior com SETA DIREITA or SETA ESQUERDA. Pressione ESPAÇO ou ENTER para ativar o botão da barra de ferramentas. O foco será movido de volta para a área de edição ao ativar o botão da barra de ferramentas.'
 		},
 
 			{
 			name: 'Diálogo do Editor',
 			legend:
-				'Dentro de um diálogo, pressione TAB para navegar para o próximo elemento. Pressione SHIFT+TAB para mover para o elemento anterior. Pressione ENTER ara enviar o diálogo. pressione ESC para cancelar o diálogo. Quando um diálogo tem múltiplas abas, a lista de abas pode ser acessada com ALT+F10 ou TAB, como parte da ordem de tabulação do diálogo. Com a lista de abas em foco, mova para a próxima aba e para a aba anterior com a SETA DIREITA ou SETA ESQUERDA, respectivamente.' 
+				'Dentro de um diálogo, pressione TAB para navegar para o próximo elemento, pressione SHIFT+TAB para mover para o elemento anterior, pressione ENTER para enviar o diálogo, pressione ESC para cancelar o diálogo. Quando um diálogo tem múltiplas abas, a lista de abas pode ser acessada com ALT+F10 ou TAB, como parte da ordem de tabulação do diálogo. Com a lista de abas em foco, mova para a próxima aba e para a aba anterior com a SETA DIREITA ou SETA ESQUERDA, respectivamente. Pressione ESC para descartar as mudanças e fechar o diálogo. O foco irá mover de volta para a área de edição após deixar o diálogo.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'pt-br', {
 			{
 			name: ' Ajuda de Acessibilidade',
 			legend: 'Pressione ${a11yHelp}'
+		},
+			{
+			name: 'Colar como texto sem formatação',
+			legend: 'Pressione ${pastetext}',
+			legendEdge: 'Pressione ${pastetext}, seguido de ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Tecla Backspace',
 	tab: 'Tecla Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Seta à Esquerda',
 	upArrow: 'Seta à Cima',
 	rightArrow: 'Seta à Direita',
 	downArrow: 'Seta à Baixo',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: 'Tecla do Windows Esquerda',
 	rightWindowKey: 'Tecla do Windows Direita',
 	selectKey: 'Tecla Selecionar',

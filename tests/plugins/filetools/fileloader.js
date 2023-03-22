@@ -1,23 +1,63 @@
-/* bender-tags: editor,unit,clipboard,filetools */
+/* bender-tags: editor,clipboard,filetools */
 /* bender-ckeditor-plugins: filetools */
+/* bender-include: _helpers/tools.js */
+/* global fileTools */
 
 'use strict';
 
 ( function() {
-	var FileReaderBackup = window.FileReader,
+	// IE/Edge doesn't support File constructor, so there is a need to mimic it.
+	fileTools.mockFileType();
+
+	var File = window.File,
+		Blob = window.Blob,
+		FormData = window.FormData,
+		FileReaderBackup = window.FileReader,
 		XMLHttpRequestBackup = window.XMLHttpRequest,
 		FileLoader, resumeAfter,
 		pngBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAAXNSR0IArs4c6QAAAAxJREFUCNdjYGBgAAAABAABJzQnCgAAAABJRU5ErkJggg==',
 		testFile, lastFormData,
 		listeners = [],
 		editorMock = {
-			config: {}
+			config: {
+				fileTools_requestHeaders: {
+					foo: 'bar',
+					hello: 'world'
+				}
+			}
 		},
 		editorMockDefaultFileName = {
 			config: {
 				fileTools_defaultFileName: 'default-file-name'
 			}
 		};
+
+	function createFormDataMock() {
+		window.FormData = function() {
+			var entries = {},
+				mock = {
+					get: function( name ) {
+						return entries[ name ] || null;
+					},
+					append: function( name, value, fileName ) {
+						if ( value instanceof File && ( value.name === fileName || !fileName ) )
+							entries[ name ] = value;
+						else if ( value instanceof Blob ) {
+							fileName = fileName || value.name || 'blob';
+
+							entries [ name ] = new File( [ value ], fileName );
+						}
+						else
+							entries[ name ] = value + '';
+					},
+					has: function( name ) {
+						return Object.prototype.hasOwnProperty.call( entries, name );
+					}
+				};
+
+			return mock;
+		};
+	}
 
 	function createFileReaderMock( scenario ) {
 		var isAborted = false;
@@ -121,7 +161,9 @@
 						setTimeout( function() {
 							xhr.onabort();
 						}, 0 );
-					}
+					},
+
+					setRequestHeader: sinon.stub()
 				};
 
 			return xhr;
@@ -196,6 +238,11 @@
 			if ( !CKEDITOR.plugins.clipboard.isFileApiSupported ) {
 				assert.ignore();
 			}
+
+			// FormData in IE & Chrome 47- supports only adding data, not getting it, so mocking (polyfilling?) is required.
+			// Note that mocking is needed only for tests, as CKEditor.fileTools uses only append method
+			if ( !FormData.prototype.get || !FormData.prototype.has )
+				createFormDataMock();
 
 			FileLoader = CKEDITOR.fileTools.fileLoader;
 			resumeAfter = bender.tools.resumeAfter;
@@ -348,7 +395,68 @@
 			wait();
 		},
 
-		'test upload response not encoded (#13030)': function() {
+		'test upload with custom field name (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, pngBase64, 'name.png' );
+
+			attachListener( editorMock, 'fileUploadRequest', function( evt ) {
+				var requestData = evt.data.requestData;
+
+				requestData.myFile = requestData.upload;
+
+				delete requestData.upload;
+			} );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.isTrue( lastFormData.has( 'myFile' ) );
+				assert.isFalse( lastFormData.has( 'upload' ) );
+
+				// FormData converts all Blob objects into File ones, so we must "revert" it
+				objectAssert.areEqual( new Blob( [ lastFormData.get( 'myFile' ) ], {} ), loader.file );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test upload with additional request parameters provided (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, pngBase64, 'name.png' );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( 'test', lastFormData.get( 'test' ) );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/', { test: 'test' } );
+
+			wait();
+		},
+
+		'test if name of file is correctly attached (https://dev.ckeditor.com/ticket/13518)': function() {
+			// Ignore because of Edge upstream (#3184).
+			// developer.microsoft.com/en-us/microsoft-edge/platform/issues/22326784
+			if ( CKEDITOR.env.edge && CKEDITOR.env.version >= 18 ) {
+				assert.ignore();
+			}
+
+			var name = 'customName.png',
+				loader = new FileLoader( editorMock, pngBase64, name );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( name, lastFormData.get( 'upload' ).name );
+			}, 3 );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test upload response not encoded (https://dev.ckeditor.com/ticket/13030)': function() {
 			var loader = new FileLoader( editorMock, pngBase64, 'na me.png' ),
 				observer = observeEvents( loader );
 
@@ -866,6 +974,54 @@
 			wait();
 		},
 
+		'test additional data passed to xhr via fileUploadRequest listener (https://dev.ckeditor.com/ticket/13518)': function() {
+			var loader = new FileLoader( editorMock, testFile ),
+				file = new File( [], 'a' );
+
+			attachListener( editorMock, 'fileUploadRequest', function( evt ) {
+				var requestData = evt.data.requestData;
+
+				requestData.customField = 'test';
+				requestData.customFile = file;
+			} );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+
+			resumeAfter( loader, 'uploaded', function() {
+				assert.areSame( 'test', lastFormData.get( 'customField' ) );
+				objectAssert.areEqual( file, lastFormData.get( 'customFile' ) );
+			} );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
+		'test additional data in fileUploadResponse (https://dev.ckeditor.com/ticket/13519)': function() {
+			var data,
+				loader = new FileLoader( editorMock, testFile );
+
+			createXMLHttpRequestMock( [ 'progress', 'load' ],
+				{ responseText: '{' +
+					'"fileName":"name2.png",' +
+					'"uploaded":1,' +
+					'"url":"http:\/\/url\/name2.png",' +
+					'"foo":"bar"' +
+				'}' } );
+
+			attachListener( editorMock, 'fileUploadResponse', function( evt ) {
+				data = evt.data;
+			} );
+
+			resumeAfter( editorMock, 'fileUploadResponse', function() {
+				assert.areSame( 'bar', data.foo );
+			} );
+
+			loader.upload( 'http:\/\/url\/' );
+
+			wait();
+		},
+
 		'test custom fileUploadRequest and fileUploadResponse': function() {
 			editorMock.lang = { filetools: { responseError: 'err' } };
 
@@ -1064,6 +1220,23 @@
 			loader.status = 'abort';
 
 			assert.isTrue( loader.isFinished() );
+		},
+
+		'test custom XHR headers': function() {
+			var loader = new FileLoader( editorMock, pngBase64 );
+
+			createXMLHttpRequestMock( [ 'load' ] );
+			loader.loadAndUpload( 'http://example.com' );
+
+			resumeAfter( loader, 'uploaded', function( evt ) {
+				var setRequestHeaderStub = evt.sender.xhr.setRequestHeader;
+
+				sinon.assert.calledWithExactly( setRequestHeaderStub, 'foo', 'bar' );
+				sinon.assert.calledWithExactly( setRequestHeaderStub, 'hello', 'world' );
+
+				assert.areSame( 2, setRequestHeaderStub.callCount, 'setRequestHeader call count' );
+			} );
+			wait();
 		}
 	} );
 } )();

@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'nl', {
 	acccessKey: 'Toegangstoets',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'nl', {
 		title: 'Eigenschappen interne link',
 		name: 'Naam interne link',
 		errorName: 'Geef de naam van de interne link op',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Interne link verwijderen'
 	},
 	anchorId: 'Op kenmerk interne link',
 	anchorName: 'Op naam interne link',
 	charset: 'Karakterset van gelinkte bron',
 	cssClasses: 'Stylesheet-klassen',
+	download: 'Download forceren',
+	displayText: 'Weergavetekst',
 	emailAddress: 'E-mailadres',
 	emailBody: 'Inhoud bericht',
 	emailSubject: 'Onderwerp bericht',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'nl', {
 	noAnchors: '(Geen interne links in document gevonden)',
 	noEmail: 'Geef een e-mailadres',
 	noUrl: 'Geef de link van de URL',
+	noTel: 'Geef een telefoonnummer',
 	other: '<ander>',
+	phoneNumber: 'Telefoonnummer',
 	popupDependent: 'Afhankelijk (Netscape)',
 	popupFeatures: 'Instellingen popupvenster',
 	popupFullScreen: 'Volledig scherm (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'nl', {
 	toAnchor: 'Interne link in pagina',
 	toEmail: 'E-mail',
 	toUrl: 'URL',
+	toPhone: 'Telefoon',
 	toolbar: 'Link invoegen/wijzigen',
 	type: 'Linktype',
 	unlink: 'Link verwijderen',

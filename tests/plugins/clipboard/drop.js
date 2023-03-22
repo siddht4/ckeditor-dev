@@ -359,7 +359,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// #13453
+		// https://dev.ckeditor.com/ticket/13453
 		'test drop inside drag range has no effect': function( editor ) {
 			var bot = bender.editorBots[ editor.name ],
 				evt = bender.tools.mockDropEvent();
@@ -383,7 +383,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// Integration test (#12806).
+		// Integration test (https://dev.ckeditor.com/ticket/12806).
 		'test drop part of the link': function( editor ) {
 			var bot = bender.editorBots[ editor.name ],
 				evt = bender.tools.mockDropEvent();
@@ -493,7 +493,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// #13468
+		// https://dev.ckeditor.com/ticket/13468
 		'test drop custom type from external source': function( editor ) {
 			var bot = bender.editorBots[ editor.name ],
 				evt = {};
@@ -635,7 +635,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		// #13879
+		// https://dev.ckeditor.com/ticket/13879
 		'test prevent drop': function( editor, bot ) {
 			var evt = bender.tools.mockDropEvent();
 
@@ -656,6 +656,86 @@ var testsForMultipleEditor = {
 				return true;
 			}, function() {
 				assert.areSame( '<p class="p">^foo</p>', bender.tools.getHtmlWithSelection( editor ), 'after drop' );
+			} );
+		},
+
+		// #(2292)
+		'test internal drag and drop on editors margin': function( editor ) {
+			// Ignored due to #4885
+			if ( CKEDITOR.env.safari ) {
+				assert.ignore();
+			}
+			var evt = bender.tools.mockDropEvent(),
+				isWindows = navigator.userAgent.toLowerCase().indexOf( 'windows' ) !== -1,
+				newLine = CKEDITOR.env.gecko && CKEDITOR.env.version >= 69 && isWindows ?
+					String.fromCodePoint( 13, 10 ) : '\n';
+
+			bender.tools.selection.setWithHtml( editor,
+				'<ol>' +
+					'<li><a href="http://test.com">{one</a></li>' +
+					'<li>two</li>' +
+					'<li>three</li>' +
+					'<li>four}</li>' +
+				'</ol>'
+			);
+
+			drag( editor, evt );
+			drop( editor, evt, {
+				dropContainer: editor.editable().find( 'li' ).getItem( 3 ),
+				dropOffset: 0,
+				expectedPasteEventCount: 1,
+				expectedDropPrevented: false,
+				expectedTransferType: CKEDITOR.DATA_TRANSFER_INTERNAL,
+				expectedText: CKEDITOR.env.edge ? 'onetwothreefour' : 'one' + newLine + 'two' + newLine + 'three' + newLine + 'four',
+				expectedHtml: '<ol><li><a href="http://test.com">one</a>@</li><li>two</li><li>three</li><li>four</li></ol>',
+				expectedDataType: 'html',
+				expectedDataValue: '<ol><li><a href="http://test.com">one</a>@</li><li>two</li><li>three</li><li>four</li></ol>'
+			} );
+		},
+
+		// (#808)
+		'test drop after range end in readOnlyMode': function( editor, bot ) {
+			var evt = bender.tools.mockDropEvent();
+
+			bot.setHtmlWithSelection( '<p class="p">^foo</p>' );
+			editor.setReadOnly( true );
+
+			drag( editor, evt );
+
+			drop( editor, evt, {
+				dropContainer: editor.editable(),
+				dropOffset: 0,
+				expectedPasteEventCount: 0,
+				expectedDropPrevented: true
+			}, function() {
+				return true;
+			}, function() {
+				editor.setReadOnly( false );
+				assert.areSame( '<p class="p">foo</p>', editor.getData(), 'after drop' );
+			} );
+		},
+
+		// (#4855)
+		'test if focus is inside the editor after the drop': function( editor ) {
+			var bot = bender.editorBots[ editor.name ],
+				evt = bender.tools.mockDropEvent(),
+				editable = editor.editable();
+
+			bot.setHtmlWithSelection( '<p class="p">Lorem ipsum sit amet.</p>' );
+			editor.resetUndo();
+
+			evt.$.dataTransfer.setData( 'Text', 'dolor' );
+
+			drop( editor, evt, {
+				dropContainer: editor.editable().findOne( '.p' ).getChild( 0 ),
+				dropOffset: 6,
+				expectedTransferType: CKEDITOR.DATA_TRANSFER_EXTERNAL,
+				expectedText: 'dolor',
+				expectedHtml: '',
+				expectedDataType: 'text',
+				expectedDataValue: 'dolor'
+			}, null, function() {
+				assert.areSame( editable, editor.focusManager.currentActive, 'Focus is inside the editable' );
 			} );
 		}
 	},
@@ -741,7 +821,7 @@ var testsForMultipleEditor = {
 			assert.isInnerHtmlMatching( '<p class="p">lorem^ ipsum sit amet.@</p>', getWithHtml( editor ), htmlMatchOpts );
 		},
 
-		'test fix split nodes 2 (#13011)': function() {
+		'test fix split nodes 2 (https://dev.ckeditor.com/ticket/13011)': function() {
 			// <p id="p"> " f o o " " b a r " <img /> </p>
 			//                     ^         [       ]
 			//                     drop      drag
@@ -908,7 +988,7 @@ var testsForMultipleEditor = {
 			assert.isFalse( CKEDITOR.plugins.clipboard.isDropRangeAffectedByDragRange( dragRange, dropRange ) );
 		},
 
-		'test isDropRangeAffectedByDragRange adjacent positions (#13140)': function() {
+		'test isDropRangeAffectedByDragRange adjacent positions (https://dev.ckeditor.com/ticket/13140)': function() {
 			var editor = this.editors.framed,
 				bot = this.editorBots[ editor.name ],
 				dragRange = editor.createRange(),
@@ -1132,7 +1212,7 @@ var testsForMultipleEditor = {
 			} );
 		},
 
-		'test drop on non editable (#13015)': function() {
+		'test drop on non editable (https://dev.ckeditor.com/ticket/13015)': function() {
 			var editor = this.editors.divarea,
 				bot = this.editorBots[ editor.name ],
 				evt = bender.tools.mockDropEvent();
@@ -1177,6 +1257,25 @@ var testsForMultipleEditor = {
 
 			assert.isTrue( spy.called, 'preventDefault called.' );
 			assert.areEqual( 'none', data.$.dataTransfer.dropEffect, 'dropEffect reset to \'none\'' );
+		},
+
+		'test dragOver Edge': function() {
+			if ( !CKEDITOR.env.edge ) {
+				assert.ignore();
+			}
+
+			var editor = this.editors.divarea,
+				bot = this.editorBots[ editor.name ],
+				spy = sinon.spy(),
+				data = {
+					preventDefault: spy
+				};
+
+			bot.setHtmlWithSelection( '<p>Test area.</p>' );
+
+			editor.editable().fire( 'dragover', data );
+
+			assert.isTrue( spy.called, 'preventDefault called.' );
 		}
 	};
 

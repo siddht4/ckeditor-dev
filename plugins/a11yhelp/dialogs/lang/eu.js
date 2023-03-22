@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'eu', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'eu', {
 			{
 			name: 'Erabilerraztasunaren laguntza',
 			legend: 'Sakatu ${a11yHelp}'
+		},
+			{
+			name: 'Itsatsi testu arrunt bezala',
+			legend: 'Sakatu ${pastetext}',
+			legendEdge: 'Sakatu ${pastetext} eta jarraian ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Atzera tekla',
 	tab: 'Tabuladorea',
-	enter: 'Sartu',
-	shift: 'Maius',
-	ctrl: 'Ktrl',
-	alt: 'Alt',
 	pause: 'Pausatu',
 	capslock: 'Blok Maius',
 	escape: 'Ihes',
-	pageUp: 'Page Up', // MISSING
-	pageDown: 'Page Down', // MISSING
-	end: 'Buka',
-	home: 'Etxea',
+	pageUp: 'Orria gora',
+	pageDown: 'Orria behera',
 	leftArrow: 'Ezker-gezia',
 	upArrow: 'Gora gezia',
 	rightArrow: 'Eskuin-gezia',
 	downArrow: 'Behera gezia',
 	insert: 'Txertatu',
-	'delete': 'Ezabatu',
 	leftWindowKey: 'Ezkerreko Windows tekla',
 	rightWindowKey: 'Eskuineko Windows tekla',
 	selectKey: 'Hautatu tekla',

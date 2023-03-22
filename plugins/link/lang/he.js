@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'he', {
 	acccessKey: 'מקש גישה',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'he', {
 		title: 'מאפייני נקודת עיגון',
 		name: 'שם לנקודת עיגון',
 		errorName: 'יש להקליד שם לנקודת עיגון',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'מחיקת נקודת עיגון'
 	},
 	anchorId: 'עפ"י זיהוי (ID) האלמנט',
 	anchorName: 'עפ"י שם העוגן',
 	charset: 'קידוד המשאב המקושר',
 	cssClasses: 'גיליונות עיצוב קבוצות',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'כתובת הדוא"ל',
 	emailBody: 'גוף ההודעה',
 	emailSubject: 'נושא ההודעה',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'he', {
 	noAnchors: '(אין עוגנים זמינים בדף)',
 	noEmail: 'יש להקליד את כתובת הדוא"ל',
 	noUrl: 'יש להקליד את כתובת הקישור (URL)',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<אחר>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'תלוי (Netscape)',
 	popupFeatures: 'תכונות החלון הקופץ',
 	popupFullScreen: 'מסך מלא (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'he', {
 	toAnchor: 'עוגן בעמוד זה',
 	toEmail: 'דוא"ל',
 	toUrl: 'כתובת (URL)',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'הוספת/עריכת קישור',
 	type: 'סוג קישור',
 	unlink: 'הסרת הקישור',

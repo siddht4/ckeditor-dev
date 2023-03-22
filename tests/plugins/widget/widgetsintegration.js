@@ -6,22 +6,51 @@
 	'use strict';
 
 	var sampleWidget = '<figure data-widget="test" foo="Value1"><span>Value2</span></figure>',
-		sampleWidget2 = '<h1 data-widget="test2">TEST2</h1>';
+		sampleWidget2 = '<h1 data-widget="test2">TEST2</h1>',
+		sampleWidget3ClipboardHtml = '<div data-cke-test3-widget>test3</div>';
 
 	var editorConfig = {
-		plugins: 'wysiwygarea,sourcearea,widget,clipboard',
+		plugins: 'wysiwygarea,sourcearea,widget,clipboard,undo',
 		allowedContent: true,
+		language: 'en',
 		on: {
 			pluginsLoaded: function( evt ) {
-				evt.editor.dataProcessor.writer.sortAttributes = 1;
+				var editor = evt.editor;
+
+				editor.dataProcessor.writer.sortAttributes = 1;
 
 				// Add new, "test" and "test2" widgets to this editor.
-				evt.editor.widgets.add( 'test', {
+				editor.widgets.add( 'test', {
 					parts: {
 						bar: 'span'
 					}
 				} );
-				evt.editor.widgets.add( 'test2', {} );
+
+				editor.widgets.add( 'test2', {} );
+
+				editor.widgets.add( 'test3', {
+					getClipboardHtml: function() {
+						return sampleWidget3ClipboardHtml;
+					},
+
+					upcast: function( el ) {
+						if ( el.attributes[ 'data-test3-widget' ] ) {
+							return el.wrapWith( new CKEDITOR.htmlParser.element( 'div' ) );
+						}
+
+						return false;
+					}
+				} );
+
+				editor.widgets.add( 'test4', {
+					getClipboardHtml: function() {
+						return '<div data-cke-nested-widget="true">Content</div>';
+					},
+
+					editables: {
+						ned: '.ned'
+					}
+				} );
 			}
 		}
 	};
@@ -31,7 +60,7 @@
 	};
 
 	var fixHtml = widgetTestsTools.fixHtml,
-		obj2Array = widgetTestsTools.obj2Array,
+		objToArray = bender.tools.objToArray,
 		data2Attr = widgetTestsTools.data2Attribute,
 		getWidgetById = widgetTestsTools.getWidgetById,
 		widgetWrapperAttributes = widgetTestsTools.widgetWrapperAttributes,
@@ -52,12 +81,40 @@
 	}
 
 	bender.test( {
+		tearDown: function() {
+			this.editor.setReadOnly( false );
+		},
+
+		// (#1901)
+		'test modifier keystrokes upon widget focus': function() {
+			var editor = this.editor;
+
+			editor.widgets.add( 'testevent', {
+				editables: {
+					foo: '.foo'
+				}
+			} );
+
+			this.editorBot.setData( '<p id="p1">foo</p><div data-widget="testevent" id="w1"><p class="foo">foo</p></div>', function() {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+				assert.areNotEqual( false, widget.fire( 'key', { keyCode: CKEDITOR.SHIFT + 121 } ), 'Shift should not be canceled' ); // SHIFT + F10
+
+				widget.focus();
+				assert.areNotEqual( false, widget.fire( 'key', { keyCode: CKEDITOR.CTRL + 121 } ), 'Ctrl should not be canceled' ); // CTRL + F10
+
+				widget.focus();
+				assert.areNotEqual( false, widget.fire( 'key', { keyCode: CKEDITOR.ALT + 121 } ), 'Alt should not be canceled' ); // ALT + F10
+			} );
+		},
+
 		'test initializing widgets': function() {
 			var editor = this.editor;
 
 			this.editorBot.setData( sampleWidget + '<p>foo</p>' + sampleWidget2 + '<p id="x">foo</p>' + sampleWidget2, function() {
 				var editable = editor.editable(),
-					instances = obj2Array( editor.widgets.instances ),
+					instances = objToArray( editor.widgets.instances ),
 					names = [ instances[ 0 ].name, instances[ 1 ].name, instances[ 2 ].name ].sort();
 
 				assert.areEqual( 3, instances.length, 'Three widget instances are present.' );
@@ -76,7 +133,7 @@
 				editor.insertElement( el );
 				var widget = editor.widgets.initOn( el, editor.widgets.registered.test2 );
 
-				instances = obj2Array( editor.widgets.instances );
+				instances = objToArray( editor.widgets.instances );
 
 				assert.areEqual( 4, instances.length, 'Four widget instances are present.' );
 				assert.areEqual( 'test2', instances[ 3 ].name, 'Widget4 is correctly initialized.' );
@@ -157,7 +214,7 @@
 
 			this.editorBot.setData( sampleWidget + '<p>foo</p>' + sampleWidget2 + '<p id="x">foo</p>' + sampleWidget2, function() {
 				var widgets = editor.widgets,
-					instances = obj2Array( widgets.instances );
+					instances = objToArray( widgets.instances );
 
 				assert.areEqual( 3, instances.length, 'Three widget instances are present at the beginning' );
 
@@ -168,7 +225,7 @@
 				editor.insertElement( el );
 				widgets.initOn( el );
 
-				instances = obj2Array( widgets.instances );
+				instances = objToArray( widgets.instances );
 
 				assert.areEqual( 4, instances.length, 'Four widget instances are present after initializing new one' );
 
@@ -182,7 +239,7 @@
 					} );
 
 				bot.setData( sampleWidget2, function() {
-					instances = obj2Array( widgets.instances );
+					instances = objToArray( widgets.instances );
 					assert.areEqual( 1, instances.length, 'After setData only one widget instance is registered' );
 					assert.areSame( 'test2', instances[ 0 ].name );
 					assert.areSame( 4, destroyedInstances, '4 instances were destroyed' );
@@ -312,12 +369,12 @@
 			this.editorBot.setData( sampleWidget2 + '<p>foo</p>' + sampleWidget2, function() {
 				var widgets = editor.widgets;
 
-				assert.areEqual( 2, CKEDITOR.tools.objectKeys( widgets.instances ).length, 'Two widgets instances are present at the beginning' );
+				assert.areEqual( 2, CKEDITOR.tools.object.keys( widgets.instances ).length, 'Two widgets instances are present at the beginning' );
 
 				// Ensure async.
 				wait( function() {
 					editor.setMode( 'source', function() {
-						var sourceWidgetsLength = CKEDITOR.tools.objectKeys( widgets.instances ).length,
+						var sourceWidgetsLength = CKEDITOR.tools.object.keys( widgets.instances ).length,
 							sourceData = editor.getData();
 
 						editor.setMode( 'wysiwyg', function() {
@@ -326,7 +383,7 @@
 								assert.areEqual( sampleWidget2 + '<p>foo</p>' + sampleWidget2, sourceData,
 									'In source mode widgets are in output format' );
 
-								assert.areEqual( 2, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+								assert.areEqual( 2, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 									'Two instances has been initialized after switching back to wysiwyg' );
 								assert.areEqual( 2, editor.editable().find( '.cke_widget_wrapper' ).count(),
 									'Two widget wrappers are present' );
@@ -341,7 +398,7 @@
 			var editor = this.editor;
 
 			this.editorBot.setData( '<div>Foo' + sampleWidget + 'Bar</div>', function() {
-				var instances = obj2Array( editor.widgets.instances ),
+				var instances = objToArray( editor.widgets.instances ),
 					instance = instances[ 0 ];
 
 				assert.areEqual( '1',
@@ -383,7 +440,7 @@
 					'<p><i class="autodata" data-widget="autodata1">A</i><i class="autodata">B</i>' +
 					'<b class="autodata" data-widget="autodata2">C</b><b class="autodata">D</b></p>',
 					function() {
-						assert.areSame( 4, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length, '4 widgets are upcasted' );
+						assert.areSame( 4, CKEDITOR.tools.object.keys( editor.widgets.instances ).length, '4 widgets are upcasted' );
 						assert.areSame( '<p><i class="autodata" data-widget="autodata1">A</i><i class="autodata">B</i>' +
 							'<b class="autodata" data-widget="autodata2" foo="1">C</b><b class="autodata" foo="1">D</b></p>', editor.getData() );
 					}
@@ -395,7 +452,7 @@
 			var editor = this.editor;
 
 			this.editorBot.setData( '<p>X</p>' + sampleWidget + '<p>X</p>' + sampleWidget2 + '<p id="x">X</p>', function() {
-				assert.areEqual( 2, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length, 'instances after setData' );
+				assert.areEqual( 2, CKEDITOR.tools.object.keys( editor.widgets.instances ).length, 'instances after setData' );
 
 				// Set selection after last "X".
 				var p = editor.document.getById( 'x' ),
@@ -408,7 +465,7 @@
 
 				editor.once( 'afterPaste', function() {
 					resume( function() {
-						assert.areEqual( 4, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length, 'instances afterPaste' );
+						assert.areEqual( 4, CKEDITOR.tools.object.keys( editor.widgets.instances ).length, 'instances afterPaste' );
 
 						assert.areEqual( 4, editor.document.find( '.cke_widget_wrapper' ).count(), 'wrappers afterPaste' );
 
@@ -463,13 +520,13 @@
 				var html = editor.editable().getHtml();
 
 				assert.isMatching( pattern, fixHtml( html ), 'HTML after loading element to be upcasted' );
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length, '1 widget instance after setData' );
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length, '1 widget instance after setData' );
 
 				bot.setData( '<p>X</p>', function() {
 					editor.once( 'afterPaste', function() {
 						resume( function() {
 							assert.isMatching( pattern, fixHtml( editor.editable().getHtml() ), 'HTML after pasting element' );
-							assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length, '1 widget instance after paste' );
+							assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length, '1 widget instance after paste' );
 						} );
 					} );
 
@@ -485,13 +542,13 @@
 			var editor = this.editor;
 
 			this.editorBot.setData( sampleWidget + '<p>X</p>', function() {
-				obj2Array( editor.widgets.instances )[ 0 ].setData( 'foo', 'bar' );
+				objToArray( editor.widgets.instances )[ 0 ].setData( 'foo', 'bar' );
 
 				var html = editor.editable().getHtml();
 
 				editor.once( 'afterPaste', function() {
 					resume( function() {
-						assert.areSame( 'bar', obj2Array( editor.widgets.instances )[ 0 ].data.foo );
+						assert.areSame( 'bar', objToArray( editor.widgets.instances )[ 0 ].data.foo );
 					} );
 				} );
 
@@ -515,7 +572,7 @@
 
 				editor.once( 'afterPaste', function() {
 					resume( function() {
-						var instances = obj2Array( editor.widgets.instances ),
+						var instances = objToArray( editor.widgets.instances ),
 							sel = editor.getSelection();
 
 						assert.areSame( 1, instances.length, 'one widget initialized after paste' );
@@ -545,7 +602,7 @@
 
 				editor.once( 'afterPaste', function() {
 					resume( function() {
-						var instances = obj2Array( editor.widgets.instances ),
+						var instances = objToArray( editor.widgets.instances ),
 							sel = editor.getSelection();
 
 						assert.areSame( 2, instances.length, 'one widget initialized after paste' );
@@ -634,6 +691,39 @@
 			} );
 		},
 
+		// #1570
+		'test cutting single focused widget with readonly mode': function() {
+			var editor = this.editor;
+
+			this.editorBot.setData( '<p>X</p><p id="w1" data-widget="test2">A</p><p>X</p>', function() {
+				var widget = getWidgetById( editor, 'w1' ),
+					selectionChanged = 0;
+
+				widget.focus();
+
+				editor.on( 'selectionChange', function() {
+					selectionChanged += 1;
+				} );
+
+				editor.setReadOnly( true );
+
+				editor.editable().fire( 'keydown', new CKEDITOR.dom.event( { keyCode: CKEDITOR.CTRL + 88 } ) );
+
+				var copybin = editor.document.getById( 'cke_copybin' ),
+					selContainer = editor.getSelection().getCommonAncestor();
+
+				assert.isTrue( !!copybin, 'copybin was created' );
+				assert.isTrue( copybin.contains( selContainer ) || copybin.equals( selContainer ), 'selection was moved to the copybin' );
+
+				wait( function() {
+					assert.isTrue( selectionChanged == 0, 'selection has not been changed' );
+					assert.isTrue( !!getWidgetById( editor, 'w1' ), 'widget has not been deleted' );
+					assert.isFalse( !!editor.getSelection().isFake, 'selection is not faked' );
+					assert.isFalse( !!editor.document.getById( 'cke_copybin' ), 'copybin was removed' );
+				}, 150 );
+			} );
+		},
+
 		'test pasting single focused widget': function() {
 			var editor = this.editor;
 
@@ -668,7 +758,7 @@
 			} );
 		},
 
-		// #13460
+		// https://dev.ckeditor.com/ticket/13460
 		'test pasting a widget with lots of extra markup and mixed HTML case': function() {
 			var editor = this.editor;
 
@@ -728,6 +818,421 @@
 			} );
 		},
 
+		// (#3138)
+		'test widget clipboard html can be shadowed': function() {
+			var editor = this.editor;
+
+			this.editorBot.setData( '<div id="w1" data-widget="test3">test3</div>', function() {
+				var widget = getWidgetById( editor, 'w1' );
+
+				assert.areEqual( sampleWidget3ClipboardHtml, widget.getClipboardHtml() );
+			} );
+		},
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for copying (single widget)': createCopyCutTest( {
+			event: 'copy',
+			html: '<div id="w1" data-widget="test3">test3</div>',
+
+			init: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				assert.isMatching( /.*data-cke-test3-widget.*/, clipboardHtml );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for cutting (single widget)': createCopyCutTest( {
+			event: 'cut',
+			html: '<div id="w1" data-widget="test3">test3</div>',
+
+			init: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				assert.isMatching( /.*data-cke-test3-widget.*/, clipboardHtml );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for copying (multiple widgets)': createCopyCutTest( {
+			event: 'copy',
+			html: '<p>Lorem</p>' +
+				'<div id="w1" data-widget="test3">test3</div>' +
+				'<div id="w2" data-widget="test3">test3</div>' +
+				'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				// Due to weird HTML in IE8 we can't use assert.isMatching here.
+				var match = clipboardHtml.match( /.*?data-cke-test3-widget.*?/g );
+
+				assert.areSame( 2, match.length );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for cutting (multiple widgets)': createCopyCutTest( {
+			event: 'cut',
+			html: '<p>Lorem</p>' +
+				'<div id="w1" data-widget="test3">test3</div>' +
+				'<div id="w2" data-widget="test3">test3</div>' +
+				'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				// Due to weird HTML in IE8 we can't use assert.isMatching here.
+				var match = clipboardHtml.match( /.*?data-cke-test3-widget.*?/g );
+
+				assert.areSame( 2, match.length );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for copying (single nested widget)': createCopyCutTest( {
+			event: 'copy',
+			html: '<div data-widget="test4" id="w1">' +
+				'<div class="ned">' +
+					'<div id="w2" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>',
+
+			init: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				assert.isMatching( /<div data-cke-nested-widget="true">Content<\/div>/i, clipboardHtml );
+				assert.isNotMatching( /.*data-cke-test3-widget.*/, clipboardHtml );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for cutting (single nested widget)': createCopyCutTest( {
+			event: 'cut',
+			html: '<div data-widget="test4" id="w1">' +
+				'<div class="ned">' +
+					'<div id="w2" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>',
+
+			init: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				assert.isMatching( /<div data-cke-nested-widget="true">Content<\/div>/i, clipboardHtml );
+				assert.isNotMatching( /.*data-cke-test3-widget.*/, clipboardHtml );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for copying (multiple nested widgets)': createCopyCutTest( {
+			event: 'copy',
+			html: '<p>Lorem</p>' +
+			'<div data-widget="test4" id="w1">' +
+				'<div class="ned">' +
+					'<div id="w2" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>' +
+			'<div data-widget="test4" id="w3">' +
+				'<div class="ned">' +
+					'<div id="w4" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>' +
+			'<p>ipsum</p>',
+
+			// Safari has issues with selecting multiple nested widgets, so we must anchor
+			// selection in text before and after widgets.
+			init: function( editor ) {
+				var range = editor.createRange(),
+					paragraphs = editor.editable().find( 'p' ).toArray(),
+					startNode = paragraphs[ 0 ].getChild( 0 ),
+					endNode = paragraphs[ 1 ].getChild( 0 );
+
+				range.setStart( startNode, 4 );
+				range.setEnd( endNode, 3 );
+				range.select();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				// Due to weird HTML in IE8 we can't use assert.isMatching here.
+				var match = clipboardHtml.match( /<div data-cke-nested-widget="true">Content<\/div>/gi );
+
+				assert.areSame( 2, match.length );
+			}
+		} ),
+
+		// (#3138)
+		'test shadowed clipboard HTML is used for cutting (multiple nested widgets)': createCopyCutTest( {
+			event: 'cut',
+			html: '<p>Lorem</p>' +
+			'<div data-widget="test4" id="w1">' +
+				'<div class="ned">' +
+					'<div id="w2" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>' +
+			'<div data-widget="test4" id="w3">' +
+				'<div class="ned">' +
+					'<div id="w4" data-widget="test3">test3</div>' +
+				'</div>' +
+			'</div>' +
+			'<p>ipsum</p>',
+
+			// Safari has issues with selecting multiple nested widgets, so we must anchor
+			// selection in text before and after widgets.
+			init: function( editor ) {
+				var range = editor.createRange(),
+					paragraphs = editor.editable().find( 'p' ).toArray(),
+					startNode = paragraphs[ 0 ].getChild( 0 ),
+					endNode = paragraphs[ 1 ].getChild( 0 );
+
+				range.setStart( startNode, 4 );
+				range.setEnd( endNode, 3 );
+				range.select();
+			},
+
+			assert: function( editor, clipboardHtml ) {
+				// Due to weird HTML in IE8 we can't use assert.isMatching here.
+				var match = clipboardHtml.match( /<div data-cke-nested-widget="true">Content<\/div>/gi );
+
+				assert.areSame( 2, match.length );
+			}
+		} ),
+
+		// (#3138)
+		'test selection is restored after copying (single widget)': createCopyCutTest( {
+			event: 'copy',
+			html: '<div id="w1" data-widget="test3">test3</div>',
+
+			init: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor ) {
+				var widget = getWidgetById( editor, 'w1' );
+
+				assert.areSame( widget, editor.widgets.focused );
+			}
+		} ),
+
+		// (#3138)
+		'test selection is restored after copying (multiple widgets)': createCopyCutTest( {
+			event: 'copy',
+			html: '<p>Lorem</p>' +
+			'<div id="w1" data-widget="test3">test3</div>' +
+			'<div id="w2" data-widget="test3">test3</div>' +
+			'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+			},
+
+			// Different browsers anchor selection to different elements, that's why
+			// we use such logic to check if selection contains widgets.
+			assert: function( editor ) {
+				var range = editor.getSelection().getRanges()[ 0 ],
+					widgets = range._find( '[data-widget]', true );
+
+				assert.areSame( 2, widgets.length );
+			}
+		} ),
+
+		// (#3138)
+		'test selection is restored after copying (multiple widgets at boundaries)': createCopyCutTest( {
+			ignore: !CKEDITOR.env.webkit,
+			event: 'copy',
+			html: '<div id="w1" data-widget="test3">test3</div>' +
+			'<p>Lorem</p>' +
+			'<p>Ipsum</p>' +
+			'<div id="w2" data-widget="test3">test3</div>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+
+				// We must simulate widgetselection behaviour.
+				CKEDITOR.plugins.widgetselection.addFillers( editor.editable() );
+			},
+
+			assert: function( editor ) {
+				var nativeSel = editor.getSelection().getNative(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper.$,
+					endNode = getWidgetById( editor, 'w2' ).wrapper.$;
+
+				// What's interesting, Chrome claims that even if selection is visibly collapsed,
+				// the whole content is selected. That's why two additional assertions are needed.
+				assert.isTrue( CKEDITOR.plugins.widgetselection.isWholeContentSelected( editor.editable() ),
+					'whole content is selected' );
+				assert.isTrue( nativeSel.containsNode( startNode ), 'start node is inside selection' );
+				assert.isTrue( nativeSel.containsNode( endNode ), 'end node is inside selection' );
+			}
+		} ),
+
+		// (#3482)
+		'test selection is restored after copying (widget in the middle, select all)': createCopyCutTest( {
+			ignore: !CKEDITOR.env.webkit,
+			event: 'copy',
+			html: '<p>Lorem</p>' +
+			'<div id="w1" data-widget="test3">test3</div>' +
+			'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange();
+
+				range.selectNodeContents( editor.editable() );
+				range.select();
+			},
+
+			assert: function( editor ) {
+				assert.isTrue( CKEDITOR.plugins.widgetselection.isWholeContentSelected( editor.editable() ),
+					'whole content is selected' );
+			}
+		} ),
+
+		// (#3138)
+		'test content is removed after cutting (single widget)': createCopyCutTest( {
+			event: 'cut',
+			html: '<div id="w1" data-widget="test3">test3</div>',
+
+			init: function( editor ) {
+				// Ignored due to #4885
+				if ( CKEDITOR.env.safari ) {
+					assert.ignore();
+				}
+
+				var widget = getWidgetById( editor, 'w1' );
+
+				widget.focus();
+			},
+
+			assert: function( editor ) {
+				assert.areSame( '', editor.getData() );
+				assert.isTrue( editor.getSelection().isCollapsed(), 'selection is collapsed' );
+			}
+		} ),
+
+		// (#3138)
+		'test content is removed after cutting (multiple widget)': createCopyCutTest( {
+			event: 'cut',
+			html: '<p>Lorem</p>' +
+			'<div id="w1" data-widget="test3">test3</div>' +
+			'<div id="w2" data-widget="test3">test3</div>' +
+			'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					widget1 = getWidgetById( editor, 'w1' ),
+					widget2 = getWidgetById( editor, 'w2' );
+
+				range.setStartBefore( widget1.wrapper );
+				range.setEndAfter( widget2.wrapper );
+				range.select();
+			},
+
+			assert: function( editor ) {
+				var data = editor.getData();
+
+				assert.isNotMatching( /<div.+?>/, data, 'widgets are removed' );
+				assert.isTrue( editor.getSelection().isCollapsed(), 'selection is collapsed' );
+			}
+		} ),
+
+		// (#3138)
+		'test undo stack after copying (multiple widgets)': createCopyCutTest( {
+			event: 'copy',
+			html: '<p>Lorem</p>' +
+			'<div id="w1" data-widget="test3">test3</div>' +
+			'<div id="w2" data-widget="test3">test3</div>' +
+			'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+
+				editor.resetUndo();
+			},
+
+			assert: function( editor ) {
+				assert.isFalse( editor.undoManager.undoable(), 'copy is not undoable' );
+			}
+		} ),
+
+		// (#3138)
+		'test undo stack after cutting (multiple widgets)': createCopyCutTest( {
+			event: 'cut',
+			html: '<p>Lorem</p>' +
+			'<div id="w1" data-widget="test3">test3</div>' +
+			'<div id="w2" data-widget="test3">test3</div>' +
+			'<p>Ipsum</p>',
+
+			init: function( editor ) {
+				var range = editor.createRange(),
+					startNode = getWidgetById( editor, 'w1' ).wrapper,
+					endNode = getWidgetById( editor, 'w2' ).wrapper;
+
+				range.setStartBefore( startNode );
+				range.setEndAfter( endNode );
+				range.select();
+
+				editor.resetUndo();
+			},
+
+			assert: function( editor ) {
+				var undoManager = editor.undoManager;
+
+				assert.isTrue( undoManager.undoable(), 'cut is undoable' );
+				assert.areSame( 2, undoManager.snapshots.length, 'Steps amount' );
+			}
+		} ),
+
 		'test single inserted widget is focused': function() {
 			var editor = this.editor,
 				bot = this.editorBot;
@@ -737,7 +1242,7 @@
 
 				editor.insertHtml( '<b data-widget="test2">x</b>' );
 
-				var instances = obj2Array( editor.widgets.instances ),
+				var instances = objToArray( editor.widgets.instances ),
 					sel = editor.getSelection();
 
 				assert.areSame( 1, instances.length, 'one widget initialized after paste' );
@@ -755,7 +1260,7 @@
 
 				editor.insertHtml( '<b data-widget="test2">x</b>foo' );
 
-				var instances = obj2Array( editor.widgets.instances ),
+				var instances = objToArray( editor.widgets.instances ),
 					sel = editor.getSelection();
 
 				assert.areSame( 1, instances.length, 'one widget initialized after paste' );
@@ -998,4 +1503,33 @@
 			} );
 		}
 	} );
+
+	function createCopyCutTest( options ) {
+		return function() {
+			var evtName = options.event || 'copy',
+				editor = this.editor;
+
+			if ( options.ignore ) {
+				return assert.ignore();
+			}
+
+			this.editorBot.setData( options.html, function() {
+				var clipboardHtml;
+
+				if ( options.init ) {
+					options.init( editor );
+				}
+
+				editor.editable().once( evtName, function() {
+					clipboardHtml = editor.getSelectedHtml( true );
+				} );
+
+				editor.editable().fire( evtName, new CKEDITOR.dom.event( {} ) );
+
+				wait( function() {
+					options.assert( editor, clipboardHtml );
+				}, 150 );
+			} );
+		};
+	}
 } )();

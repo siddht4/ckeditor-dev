@@ -10,7 +10,7 @@
 		config: {
 			allowedContent: true,
 
-			// (#13186)
+			// (https://dev.ckeditor.com/ticket/13186)
 			pasteFilter: null,
 
 			on: {
@@ -43,7 +43,7 @@
 		getWidgetById = widgetTestsTools.getWidgetById;
 
 	function keysLength( obj ) {
-		return CKEDITOR.tools.objectKeys( obj ).length;
+		return CKEDITOR.tools.object.keys( obj ).length;
 	}
 
 	function testDelKey( editor, keyName, range, shouldBeBlocked, msg ) {
@@ -216,6 +216,52 @@
 
 				assert.areEqual( 2, keysLength( editor.widgets.instances ), '2 widgets reimained' );
 				assert.isNotNull( getWidgetById( editor, 'w2', true ), 'nested widget was not destroyed' );
+			} );
+		},
+
+		// (#1722)
+		'test #destroyEditable destroys unused editable filters': function() {
+			var editor = this.editor;
+
+			editor.widgets.add( 'testmethod5', {
+				editables: {
+					foo: '#foo'
+				}
+			} );
+
+			var widget1Html = '<div data-widget="testmethod5" id="w1"><p>A</p><p class="foo">B</p></div>',
+				widget2Html = '<div data-widget="testmethod5" id="w2"><p>A</p><p class="foo">B</p></div>';
+
+			this.editorBot.setData( widget1Html + widget2Html, function() {
+				var widget1 = getWidgetById( editor, 'w1' ),
+					widget2 = getWidgetById( editor, 'w2' );
+
+				widget1.initEditable( 'foo', { selector: '.foo', allowedContent: 'p br' } );
+				widget2.initEditable( 'foo', { selector: '.foo', allowedContent: 'p br' } );
+
+				var removedListeners = [],
+					filters = editor.widgets._.filters.testmethod5,
+					filterSpy = sinon.spy( filters.foo, 'destroy' );
+
+				widget1.editables.foo.removeListener = function( evtName ) {
+					removedListeners.push( evtName );
+				};
+
+				widget2.editables.foo.removeListener = function( evtName ) {
+					removedListeners.push( evtName );
+				};
+
+				widget1.destroyEditable( 'foo' );
+
+				assert.isNotUndefined( filters.foo );
+
+				widget2.destroyEditable( 'foo' );
+
+				assert.isUndefined( filters.foo );
+
+				assert.isTrue( filterSpy.calledOnce );
+
+				filterSpy.restore();
 			} );
 		},
 
@@ -604,8 +650,7 @@
 			} );
 
 			this.editorBot.setData( data, function() {
-				var widget = getWidgetById( editor, 'w1' ),
-					editable = widget.editables.foo;
+				var editable = getWidgetById( editor, 'w1' ).editables.foo;
 
 				editable.filter.addContentForms( [ 'u', 'i' ] );
 
@@ -628,6 +673,66 @@
 				assert.areSame(
 					'<p>Foo</p><div data-widget="testprocessing2" id="w1"><p id="foo"><i testprocessing2="2">A</i></p></div>',
 					editor.getData(), 'nested editable\'s data was processed as an editable content on output' );
+			} );
+		},
+
+		// #568
+		'test nested editable editableDef.disallowedContent filter works with editableDef.allowedContent': function() {
+			var editor = this.editor,
+				data = '<p>Foo</p><div data-widget="testprocessing3" id="w1"><p id="foo">B</p></div>';
+
+			editor.widgets.add( 'testprocessing3', {
+				editables: {
+					disallowedWithAllowedContent: {
+						selector: '#foo',
+						allowedContent: 'u i p',
+						disallowedContent: 'i'
+					}
+				}
+			} );
+
+			this.editorBot.setData( data, function() {
+				var editable = getWidgetById( editor, 'w1' ).editables.disallowedWithAllowedContent;
+
+				assert.isTrue( editable.filter.check( 'u' ), 'filter.check( \'u\' )' );
+				assert.isTrue( editable.filter.check( 'p' ), 'filter.check( \'p\' )' );
+				assert.isFalse( editable.filter.check( 'i' ), 'filter.check( \'i\' )' );
+			} );
+		},
+
+		// #568
+		'test nested editable editableDef.disallowedContent filter works based on editor.filter': function() {
+			var editor = this.editor,
+				data = '<p>Foo</p><div data-widget="testprocessing4" id="w1"><p id="foo">B</p></div>',
+				originalFilter = this.editor.filter;
+
+			// Since this test suite's editor have filter disabled, we need to temporary filter replace.
+			editor.filter = new CKEDITOR.filter( 'em strong sub; div[*](*); p[id]' );
+
+			editor.widgets.add( 'testprocessing4', {
+				editables: {
+					disallowedInheritingFromEditor: {
+						selector: '#foo',
+						// Since there's no allowedContent in the definition, disallowedContent will work based on
+						// current CKEDITOR.editor.filter clone. Since this test suite has ACF disabled it will allow everything.
+						// Here disallowedContent rules will be added on top of
+						disallowedContent: 'em strong'
+					}
+				}
+			} );
+
+			this.editorBot.setData( data, function() {
+				var editable = getWidgetById( editor, 'w1' ).editables.disallowedInheritingFromEditor;
+
+				// Restore the original filter.
+				editor.filter = originalFilter;
+
+				assert.isTrue( editable.filter.check( 'sub' ), 'filter.check( \'sub\' )' );
+				assert.isFalse( editable.filter.check( 'strong' ), 'filter.check( \'strong\' )' );
+				assert.isFalse( editable.filter.check( 'em' ), 'filter.check( \'em\' )' );
+				// And ensure that any other rule not allowed by the editor will fail.
+				assert.isFalse( editable.filter.check( 'audio' ), 'filter.check( \'audio\' )' );
+				assert.isFalse( editable.filter.check( 'sup' ), 'filter.check( \'sup\' )' );
 			} );
 		},
 
@@ -931,6 +1036,10 @@
 		},
 
 		'test focusing editor when focusing nested editable': function() {
+			if ( CKEDITOR.env.ie ) {
+				assert.ignore();
+			}
+
 			var editor = this.editor;
 
 			editor.widgets.add( 'testfocus1', {
@@ -1013,6 +1122,10 @@
 		},
 
 		'test subsequent nested editable focus causes selectionChange': function() {
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version === 11 ) {
+				assert.ignore();
+			}
+
 			var editor = this.editor,
 				editorBot = this.editorBot;
 
@@ -1148,7 +1261,7 @@
 
 					range.moveToPosition( e2.findOne( '.p2' ), CKEDITOR.POSITION_AFTER_START );
 					testDelKey( editor,	'del',	range,	false,	'e2 - ^bar' );
-					// This case is handled on Webkits and Gecko because of #11861, #13798.
+					// This case is handled on Webkits and Gecko because of https://dev.ckeditor.com/ticket/11861, https://dev.ckeditor.com/ticket/13798.
 					if ( CKEDITOR.env.ie )
 						testDelKey( editor,	'bspc',	range,	false,	'e2 - ^bar' );
 
@@ -1230,7 +1343,7 @@
 		},
 
 		'test pasting widget which was copied (d&d) when its nested editable was focused': function() {
-			// #11055
+			// https://dev.ckeditor.com/ticket/11055
 			if ( CKEDITOR.env.ie && CKEDITOR.env.version == 8 ) {
 				assert.ignore();
 			}
@@ -1275,7 +1388,7 @@
 			} );
 		},
 
-		// (#13186)
+		// (https://dev.ckeditor.com/ticket/13186)
 		'test pasting into widget nested editable when range in paste data (drop)': function() {
 			var editor = this.editor,
 				bot = this.editorBot;
@@ -1316,7 +1429,53 @@
 			} );
 		},
 
-		// Behaviour has been changed in 4.5 (#12112), so we're leaving this
+		// #1469
+		'test pasting widget into widget nested editable with selectionChange callback': function() {
+			var editor = this.editor,
+				bot = this.editorBot;
+
+			editor.widgets.add( 'widget-pastenested', {
+				parts: {
+					label: 'p'
+				},
+
+				editables: {
+					nested: {
+						selector: '.widget-nested'
+					}
+				}
+			} );
+
+			bot.setData( '<div id="w1" data-widget="widget-pastenested"><p>Widget</p><div class="widget-nested">xx</div></div>', function() {
+				var widget = getWidgetById( editor, 'w1' ),
+					nested = widget.editables.nested,
+					range = editor.createRange();
+
+				range.setStart( nested.getFirst(), 1 );
+				range.collapse( 1 );
+				range.select();
+				nested.focus();
+
+				editor.once( 'afterPaste', function() {
+					resume( function() {
+						try {
+							nested.getData();
+						} catch ( e ) {
+							assert.fail( 'Error was thrown: ' + e );
+						}
+
+						assert.pass( 'Everything worked' );
+					} );
+				} );
+
+				// Simulate pasting copied, upcasted widget.
+				bender.tools.emulatePaste( editor, '<div data-cke-widget-wrapper="1"><div data-cke-widget-upcasted="1" data-widget="pastenested"><div data-cke-widget-editable="nested">Test</div></div></div>' );
+
+				wait();
+			} );
+		},
+
+		// Behaviour has been changed in 4.5.0 (https://dev.ckeditor.com/ticket/12112), so we're leaving this
 		// test as a validation of this change.
 		'test widgets\' commands are enabled in nested editable': function() {
 			var editor = this.editor,
@@ -1406,7 +1565,7 @@
 		},
 
 		'test selection in nested editable is preserved after opening and closing dialog - inline editor': function() {
-			// #11399
+			// https://dev.ckeditor.com/ticket/11399
 			if ( CKEDITOR.env.gecko ) {
 				assert.ignore();
 			}
@@ -1505,6 +1664,98 @@
 				editor.applyStyle( style );
 
 				assert.areSame( '<p><i>foo</i></p><div data-widget="testacfstyles1"><p class="foo">X</p><p class="bar"><i>X</i></p></div><p><i>foo</i></p>', editor.getData() );
+			} );
+		},
+
+		// Nested editable with preexisting numeric id. (https://dev.ckeditor.com/ticket/14451)
+		'test nested editable with preexisting numeric id': function() {
+			var editor = this.editor,
+				bot = this.editorBot;
+
+			editor.widgets.add( 'testpreexistingnumericid', {
+				editables: {
+					foo: {
+						selector: 'p',
+						allowedContent: true
+					}
+				}
+			} );
+
+			bot.setData( '<p>foo</p><div data-widget="testpreexistingnumericid"><p id="123">X</p></div><p>foo</p>',
+				function() {
+				// If that code is being executed, it means that everything is OK.
+				assert.pass( 'Editables with numeric ids are handled correctly.' );
+			} );
+		},
+
+		// (#4060)
+		'test nested editables\' content is correctly unescaped': function() {
+			// IE 8 returns wrong editor's data in this test, even if it works correctly in manual one.
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) {
+				assert.ignore();
+			}
+
+			var editor = this.editor,
+				bot = this.editorBot,
+				// String must be concatenated to avoid prematurely closing <script> element.
+				html = '<div data-widget="testprotected"><div class="content"><script>\'use strict\';</' +
+					'script></div></div>';
+
+			editor.widgets.add( 'testprotected', {
+				editables: {
+					foo: {
+						selector: '.content',
+						allowedContent: 'script'
+					}
+				}
+			} );
+
+			bot.setData( html, function() {
+				var editableContent = editor.editable().getHtml(),
+					protectedRegex = /<!--{cke_protected}.+?-->/;
+
+				assert.isTrue( protectedRegex.test( editableContent ), 'Source is protected' );
+				assert.areSame( html, editor.getData(), 'Data is correctly unescaped' );
+			} );
+		},
+
+		// (#4509)
+		'test filtering out widget UI elements': function() {
+			bender.editorBot.create( {
+				name: 'testdatafilter',
+				creator: 'replace',
+				config: {
+					allowedContent: true
+				}
+			}, function( bot ) {
+				var editor = bot.editor;
+
+				editor.widgets.add( 'testdatafilter', {
+					editables: {
+						foo: '.foo'
+					}
+				} );
+
+				bot.setData( '<div id="w1" data-widget="testdatafilter"><div class="foo"></div></div>', function() {
+					var widget1 = getWidgetById( editor, 'w1' ),
+						nestedEditable = widget1.editables.foo,
+						widgetHtml = '<div tabindex="-1" contenteditable="false" data-cke-widget-wrapper="1" data-cke-filter="off" class="cke_widget_wrapper cke_widget_block' +
+							'cke_widget_testdatafilter" data-cke-display-name="div" data-cke-widget-id="1" role="region" aria-label="Widget div">' +
+							'<div id="w2" data-widget="testdatafilter" data-cke-widget-keep-attr="1" class="cke_widget_element" data-cke-widget-data="%7B%22classes%22%3Anull%7D">' +
+								'<div class="foo cke_widget_editable" contenteditable="true" data-cke-widget-editable="foo" data-cke-enter-mode="1">' +
+									'<p>Foo</p>' +
+								'</div>' +
+							'</div>' +
+							'<span class="cke_reset cke_widget_drag_handler_container" style="background:rgba(220,220,220,0.5);background-image:url(img);display:none;">' +
+								'<img class="cke_reset cke_widget_drag_handler" data-cke-widget-drag-handler="1" src="img" width="15" title="title" height="15" role="presentation">' +
+							'</span>' +
+						'</div>',
+						expectedHtml = '<div data-widget="testdatafilter" id="w2"><div class="foo"><p>Foo</p></div></div>';
+
+					nestedEditable.setData( widgetHtml );
+
+					bender.assert.isInnerHtmlMatching( expectedHtml, nestedEditable.getData(), null, 'Widget UI elements are filtered out' );
+				} );
 			} );
 		}
 	} );

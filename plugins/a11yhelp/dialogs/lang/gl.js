@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'gl', {
@@ -12,13 +12,13 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'gl', {
 		items: [
 			{
 			name: 'Barra de ferramentas do editor',
-			legend: 'Prema ${toolbarFocus} para navegar pola barra de ferramentas. Para moverse polos distintos grupos de ferramentas use as teclas TAB e MAIÚS+TAB. Para moverse polas distintas ferramentas use FRECHA DEREITA ou FRECHA ESQUERDA. Prema ESPAZO ou INTRO para activar o botón da barra de ferramentas.'
+			legend: 'Prema ${toolbarFocus} para navegar ata a barra de ferramentas. Movase ao grupo de barras de ferramentas seguinte e anterior con TAB e MAYÚS+TAB. Movase ao botón da barra de ferramentas seguinte e anterior coa frecha cara á dereita ou á esquerda. Prema ESPAZO ou INTRO para activar o botón da barra de ferramentas. O foco moverase de novo á área de edición ao activar o botón da barra de ferramentas.'
 		},
 
 			{
 			name: 'Editor de diálogo',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'Dentro do diálogo, prema TAB para navegar cara os seguintes elementos de diálogo, prema MAIÚS+TAB para moverse cara os anteriores elementos de diálogo, prema INTRO para enviar o diálogo, prema ESC para cancelar o diálogo. Cando o diálogo ten múltiples lapelas, a lista de lapelas pode cinguirse con ALT+F10 ou con TAB como parte da orde de lapelas do diálogo. Coa lapela en foco, pode moverse cara a seguinte ou a anterior lapela coas FRECHAS ESQUERDA e DEREICHA respectivamente. Prema ESC para descartar os cambios e pechar o diálogo. O foco moverase de novo á área de edición ao saír do diálogo.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'gl', {
 			{
 			name: 'Axuda da accesibilidade',
 			legend: 'Prema ${a11yHelp}'
+		},
+			{
+			name: 'Pegar como texto simple',
+			legend: 'Prema ${pastetext}',
+			legendEdge: 'Prema ${pastetext}, seguido de ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Ir atrás',
 	tab: 'Tabulador',
-	enter: 'Intro',
-	shift: 'Maiús',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pausa',
 	capslock: 'Bloq. Maiús',
 	escape: 'Escape',
 	pageUp: 'Páxina arriba',
 	pageDown: 'Páxina abaixo',
-	end: 'Fin',
-	home: 'Inicio',
 	leftArrow: 'Frecha esquerda',
 	upArrow: 'Frecha arriba',
 	rightArrow: 'Frecha dereita',
 	downArrow: 'Frecha abaixo',
 	insert: 'Inserir',
-	'delete': 'Supr',
 	leftWindowKey: 'Tecla Windows esquerda',
 	rightWindowKey: 'Tecla Windows dereita',
 	selectKey: 'Escolla a tecla',

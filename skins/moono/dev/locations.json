@@ -102,14 +102,14 @@
 		"plugins/link/icons/link.png",
 		"plugins/link/icons/unlink.png",
 		"plugins/link/icons/anchor.png",
-		"plugins/link/icons/anchor-rtl.png"
+		"plugins/link/icons/anchor-rtl.png",
+		"plugins/copyformatting/icons/copyformatting.png"
 	],
 	"7": [
 		[
 			"plugins/image/icons/image.png",
 			"plugins/image2/icons/image.png"
 		],
-		"plugins/flash/icons/flash.png",
 		"plugins/table/icons/table.png",
 		"plugins/horizontalrule/icons/horizontalrule.png",
 		"plugins/smiley/icons/smiley.png",

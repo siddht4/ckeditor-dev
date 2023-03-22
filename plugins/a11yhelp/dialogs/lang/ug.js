@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'ug', {
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'ug', {
 			{
 			name: 'توسالغۇسىز لايىھە چۈشەندۈرۈشى',
 			legend: '${a11yHelp} نى بېسىڭ'
+		},
+			{
+			name: 'ساپ تېكىست چاپلاش',
+			legend: 'Press ${pastetext}', // MISSING
+			legendEdge: 'Press ${pastetext}, followed by ${paste}' // MISSING
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'سول يا ئوق',
 	upArrow: 'ئۈستى يا ئوق',
 	rightArrow: 'ئوڭ يا ئوق',
 	downArrow: 'ئاستى يا ئوق',
 	insert: 'قىستۇر',
-	'delete': 'ئۆچۈر',
 	leftWindowKey: 'سول Windows كۇنۇپكىسى',
 	rightWindowKey: 'ئوڭ Windows كۇنۇپكىسى',
 	selectKey: 'تاللاش كۇنۇپكىسى',

@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,widget */
+/* bender-tags: editor,widget */
 /* bender-ckeditor-plugins: image2,link,toolbar */
 /* global widgetTestsTools, image2TestsTools */
 
@@ -296,6 +296,11 @@
 		// -- Link bare with data ---------------------------
 
 		'test link bare widget (widget.setData): inline, none': function() {
+			// (#3716, #5115)
+			if ( CKEDITOR.env.ie && CKEDITOR.env.version == 9 ) {
+				assert.ignore();
+			}
+
 			this.linkBareWithSetData( 'inline-none', {
 				type: 'url',
 				url: {
@@ -715,7 +720,7 @@
 			} );
 		},
 
-		// #11801
+		// https://dev.ckeditor.com/ticket/11801
 		'test load editor anchors into link dialog when linking for the first time': function() {
 			var bot = this.editorBot,
 				editor = bot.editor,
@@ -767,7 +772,7 @@
 			} );
 		},
 
-		// #13197
+		// https://dev.ckeditor.com/ticket/13197
 		'test align classes transfered from nested image to widget wrapper': function() {
 			var bot = this.editorBots.editor1,
 				html = '<p>' +
@@ -785,7 +790,7 @@
 			} );
 		},
 
-		// #13885
+		// https://dev.ckeditor.com/ticket/13885
 		'test custom link attributes getter': function() {
 			CKEDITOR.plugins.image2.getLinkAttributesGetter = function() {
 				return function() {
@@ -817,7 +822,7 @@
 			}, inlineStructureWithLink, [ 2, 2 ] );
 		},
 
-		// #13885
+		// https://dev.ckeditor.com/ticket/13885
 		'test custom link attributes parser': function() {
 			var bot = this.editorBot;
 

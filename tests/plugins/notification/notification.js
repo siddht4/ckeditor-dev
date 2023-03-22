@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor */
 /* bender-ckeditor-plugins: toolbar,undo,notification */
 
 'use strict';
@@ -17,7 +17,7 @@ function assertNotification( expectedNotification, actualNotification ) {
 	assert.areSame( expectedNotification.message, actualNotification.message, 'Message should be the same.' );
 	assert.areSame( expectedNotification.type, actualNotification.type, 'Type should be the same.' );
 	assert.areSame( expectedNotification.duration, actualNotification.duration, 'Duration should be the same.' );
-	if ( actualNotification.type == 'progresss' ) {
+	if ( actualNotification.type == 'progress' ) {
 		assert.areSame( expectedNotification.progress, actualNotification.progress, 'Progress should be the same.' );
 	}
 	assertNotificationElement( expectedNotification, actualNotification.element );
@@ -440,5 +440,16 @@ bender.test( {
 		assert.isTrue( listener.calledOnce );
 
 		assertNotifications( editor, [ { message: 'Foo', type: 'info', alert: true } ] );
+	},
+
+	// #1057
+	'test Notification should not leak the global scope': function() {
+		// Web Notification Api is not supported by IE.
+		if ( typeof Notification === 'undefined' ) {
+			return assert.pass();
+		}
+
+		assert.isFunction( Notification );
+		assert.beautified.js( 'function Notification() { [native code] }', Notification.toString() );
 	}
 } );

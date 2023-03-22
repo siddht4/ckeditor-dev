@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'ka', {
 	acccessKey: 'წვდომის ღილაკი',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'ka', {
 		title: 'ღუზის პარამეტრები',
 		name: 'ღუზუს სახელი',
 		errorName: 'აკრიფეთ ღუზის სახელი',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Remove Anchor'
 	},
 	anchorId: 'ელემენტის Id-თ',
 	anchorName: 'ღუზის სახელით',
 	charset: 'კოდირება',
 	cssClasses: 'CSS კლასი',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'ელფოსტის მისამართები',
 	emailBody: 'წერილის ტექსტი',
 	emailSubject: 'წერილის სათაური',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'ka', {
 	noAnchors: '(ამ დოკუმენტში ღუზა არაა)',
 	noEmail: 'აკრიფეთ ელფოსტის მისამართი',
 	noUrl: 'აკრიფეთ ბმულის URL',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<სხვა>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'დამოკიდებული (Netscape)',
 	popupFeatures: 'Popup ფანჯრის პარამეტრები',
 	popupFullScreen: 'მთელი ეკრანი (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'ka', {
 	toAnchor: 'ბმული ტექსტში ღუზაზე',
 	toEmail: 'ელფოსტა',
 	toUrl: 'URL',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'ბმული',
 	type: 'ბმულის ტიპი',
 	unlink: 'ბმულის მოხსნა',

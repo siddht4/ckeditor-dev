@@ -18,6 +18,7 @@ var widgetTestsTools = ( function() {
 	//
 	// @param config.newData
 	// @param config.newWidgetPattern
+	// @param {Boolean/Function} [config.ignoreStyle=false]
 	function addTests( tcs, config ) {
 		var editor,
 			editorBot,
@@ -32,7 +33,7 @@ var widgetTestsTools = ( function() {
 					loaded: function( evt ) {
 						editor = evt.editor;
 
-						initialData = fixHtml( editor.getData(), config.ignoreStyle );
+						initialData = fixHtml( editor.getData(), config.ignoreStyle, editor );
 
 						editor.dataProcessor.writer.sortAttributes = true;
 					},
@@ -69,7 +70,7 @@ var widgetTestsTools = ( function() {
 				// Wait & ensure async.
 				wait( function() {
 					editor.setMode( 'source', function() {
-						sourceModeData = fixHtml( editor.getData(), config.ignoreStyle );
+						sourceModeData = fixHtml( editor.getData(), config.ignoreStyle, editor );
 
 						editor.setMode( 'wysiwyg', function() {
 							resume( function() {
@@ -116,7 +117,7 @@ var widgetTestsTools = ( function() {
 
 				editor.once( 'dialogHide', function() {
 					resume( function() {
-						var instances = obj2Array( editor.widgets.instances );
+						var instances = bender.tools.objToArray( editor.widgets.instances );
 						assert.areSame( 1, instances.length, 'one instance was created' );
 						assert.isMatching( config.newWidgetPattern, editor.getData(), 'data' );
 					} );
@@ -130,10 +131,10 @@ var widgetTestsTools = ( function() {
 		};
 
 		function assertWidgets( msg ) {
-			var instances = obj2Array( editor.widgets.instances );
+			var instances = bender.tools.objToArray( editor.widgets.instances );
 			assert.areSame( config.initialInstancesNumber, instances.length, 'instances number ' + msg );
 
-			checkData && assert.areSame( initialData, fixHtml( editor.getData(), config.ignoreStyle ), 'data ' + msg );
+			checkData && assert.areSame( initialData, fixHtml( editor.getData(), config.ignoreStyle, editor ), 'data ' + msg );
 
 			var editable = editor.editable();
 			for ( var i = 0; i < instances.length; ++i )
@@ -143,24 +144,19 @@ var widgetTestsTools = ( function() {
 		}
 	}
 
-	function obj2Array( obj ) {
-		var arr = [];
-		for ( var id in obj )
-			arr.push( obj[ id ] );
-
-		return arr;
-	}
-
 	function classes2Array( classesObj ) {
-		return CKEDITOR.tools.objectKeys( classesObj ).sort();
+		return CKEDITOR.tools.object.keys( classesObj ).sort();
 	}
 
-	function fixHtml( html, ignoreStyle ) {
+	function fixHtml( html, ignoreStyle, editor ) {
 		// Because IE modify style attribute we should fix it or totally ignore style attribute.
 		html = html.replace( /style="([^"]*)"/g, function( styleStr ) {
+			ignoreStyle = typeof ignoreStyle === 'function' ? ignoreStyle( editor ) : ignoreStyle;
+
 			// If there are too many problems with styles just ignore them.
-			if ( ignoreStyle )
+			if ( ignoreStyle ) {
 				return '';
+			}
 
 			// If it is only the matter of spacers and semicolons fix attributes.
 			var style = styleStr.substr( 7, styleStr.length - 8 );
@@ -198,7 +194,7 @@ var widgetTestsTools = ( function() {
 	// @param {Number} offset 0-based widget offset.
 	// @returns {CKEDITOR.plugins.widget/null} Returns null if widget was not found.
 	function getWidgetByDOMOffset( editor, offset ) {
-		var wrapper = editor.document.find( '.cke_widget_wrapper' ).getItem( offset ),
+		var wrapper = editor.editable().find( '.cke_widget_wrapper' ).getItem( offset ),
 			ret = null;
 
 		if ( wrapper )
@@ -221,7 +217,7 @@ var widgetTestsTools = ( function() {
 			expectedInstancesCount = 1;
 
 		editorBot.setData( data, function() {
-			var instancesArray = obj2Array( editorBot.editor.widgets.instances );
+			var instancesArray = bender.tools.objToArray( editorBot.editor.widgets.instances );
 
 			assert.areEqual( expectedInstancesCount, instancesArray.length, 'Invalid count of created widget instances.' );
 			assert.areEqual( fixHtml( data ), fixHtml( editorBot.getData() ), 'Editor html after performing downcast is not matching.' );
@@ -323,7 +319,7 @@ var widgetTestsTools = ( function() {
 					return ret;
 				};
 
-			instancesArray = widgetTestsTools.obj2Array( editor.widgets.instances );
+			instancesArray = bender.tools.objToArray( editor.widgets.instances );
 
 			// If expected widgets count was specified, check if it's the same.
 			typeof config.count !== 'undefined' && assert.areSame( Number( config.count ), instancesArray.length, 'Invalid count of widgets found.' );
@@ -366,23 +362,24 @@ var widgetTestsTools = ( function() {
 		fixHtml: fixHtml,
 		getWidgetById: getWidgetById,
 		getWidgetByDOMOffset: getWidgetByDOMOffset,
-		obj2Array: obj2Array,
 		classes2Array: classes2Array,
 		assertDowncast: assertDowncast,
 		assertWidgetDialog: assertWidgetDialog,
 		assertWidget: assertWidget,
 
 		widgetInitedWrapperAttributes:
-			'class="cke_widget_wrapper cke_widget_(?:inline|block)" ' +
+			'aria-label="[a-z]+ widget" ' +
+			'class="cke_widget_wrapper cke_widget_(?:inline|block) cke_widget_test(?:_upcasted_pasting|inline|block)" ' +
 			'contenteditable="false" ' +
 			'(?:data-cke-display-name="[a-z0-9]+" )?' +
 			'(?:data-cke-expando="[0-9]+" )?' +
 			'data-cke-filter="off" ' +
 			'data-cke-widget-id="[0-9]+" ' +
 			'data-cke-widget-wrapper="1" ' +
+			'role="region" ' +
 			'tabindex="-1"',
 		widgetWrapperAttributes:
-			'class="cke_widget_wrapper cke_widget_new cke_widget_(?:inline|block)" ' +
+			'class="cke_widget_wrapper cke_widget_new cke_widget_(?:inline|block) cke_widget_test(?:1|2|inline|block)?" ' +
 			'contenteditable="false" ' +
 			'(?:data-cke-display-name="[a-z0-9]+" )?' +
 			'(?:data-cke-expando="[0-9]+" )?' +
@@ -396,6 +393,7 @@ var widgetTestsTools = ( function() {
 					'data-cke-widget-drag-handler="1" ' +
 					'(?:draggable="true" )?' +
 					'height="\\d+" ' +
+					'role="presentation" ' +
 					'src="[^"]+" ' +
 					'title="[^"]+" ' +
 					'width="\\d+" ' +

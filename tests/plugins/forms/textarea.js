@@ -1,5 +1,9 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor,dialog */
 /* bender-ckeditor-plugins: forms,toolbar */
+/* bender-include: _helpers/tools.js */
+/* global formsTools */
+
+var assertRequiredAttribute = formsTools.assertRequiredAttribute;
 
 bender.editor = {
 	config: {
@@ -88,5 +92,74 @@ bender.test( {
 
 		// Start testing.
 		testValue.call( this, 0 );
-	}
+	},
+
+	// (#2423)
+	'test dialog model during textarea creation': function() {
+		var bot = this.editorBot,
+			editor = this.editor;
+
+		bot.setData( '', function() {
+			bot.dialog( 'textarea', function( dialog ) {
+				assert.isNull( dialog.getModel( editor ) );
+				assert.areEqual( CKEDITOR.dialog.CREATION_MODE, dialog.getMode( editor ) );
+
+				dialog.hide();
+			} );
+		} );
+	},
+
+	// (#2423)
+	'test dialog model with existing textarea': function() {
+		// (#3700)
+		if ( CKEDITOR.env.ie && CKEDITOR.env.version === 8 ) {
+			assert.ignore();
+		}
+
+		var bot = this.editorBot,
+			editor = this.editor;
+
+		bot.setData( '<textarea>test</textarea>', function() {
+			bot.dialog( 'textarea', function( dialog ) {
+				var textarea = editor.editable().findOne( 'textarea' );
+
+				editor.getSelection().selectElement( textarea );
+
+				assert.areEqual( textarea, dialog.getModel( editor ) );
+				assert.areEqual( CKEDITOR.dialog.EDITING_MODE, dialog.getMode( editor ) );
+
+				dialog.hide();
+			} );
+		} );
+	},
+
+	'test required attribute collapsed': assertRequiredAttribute( {
+		html: '[<textarea required></textarea>]',
+		type: 'textarea',
+		expected: true
+	} ),
+
+	'test required attribute without value': assertRequiredAttribute( {
+		html: '[<textarea required=""></textarea>]',
+		type: 'textarea',
+		expected: true
+	} ),
+
+	'test required attribute with value `required`': assertRequiredAttribute( {
+		html: '[<textarea required="required"></textarea>]',
+		type: 'textarea',
+		expected: true
+	} ),
+
+	'test required attribute absent': assertRequiredAttribute( {
+		html: '[<textarea></textarea>]',
+		type: 'textarea',
+		expected: false
+	} ),
+
+	'test required attribute with invalid value': assertRequiredAttribute( {
+		html: '[<textarea required="any value other than empty string or required"></textarea>]',
+		type: 'textarea',
+		expected: true
+	} )
 } );

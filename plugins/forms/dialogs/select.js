@@ -1,6 +1,6 @@
-/**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/**
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 CKEDITOR.dialog.add( 'select', function( editor ) {
 	// Add a new option to a SELECT object (combo or list).
@@ -125,12 +125,21 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 		title: editor.lang.forms.select.title,
 		minWidth: CKEDITOR.env.ie ? 460 : 395,
 		minHeight: CKEDITOR.env.ie ? 320 : 300,
-		onShow: function() {
-			delete this.selectBox;
-			this.setupContent( 'clear' );
-			var element = this.getParentEditor().getSelection().getSelectedElement();
+		getModel: function( editor ) {
+			var element = editor.getSelection().getSelectedElement();
+
 			if ( element && element.getName() == 'select' ) {
-				this.selectBox = element;
+				return element;
+			}
+
+			return null;
+
+		},
+		onShow: function() {
+			this.setupContent( 'clear' );
+
+			var element = this.getModel( this.getParentEditor() );
+			if ( element ) {
 				this.setupContent( element.getName(), element );
 
 				// Load Options into dialog.
@@ -141,11 +150,13 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 		},
 		onOk: function() {
 			var editor = this.getParentEditor(),
-				element = this.selectBox,
-				isInsertMode = !element;
+				element = this.getModel( editor ),
+				isInsertMode = this.getMode( editor ) == CKEDITOR.dialog.CREATION_MODE;
 
-			if ( isInsertMode )
+			if ( isInsertMode ) {
 				element = editor.document.createElement( 'select' );
+			}
+
 			this.commitContent( element );
 
 			if ( isInsertMode ) {
@@ -210,6 +221,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 			},
 			{
 				type: 'hbox',
+				className: 'cke_dialog_forms_select_order_txtsize',
 				widths: [ '175px', '170px' ],
 				children: [ {
 					id: 'txtSize',
@@ -248,6 +260,7 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 			{
 				type: 'hbox',
 				widths: [ '115px', '115px', '100px' ],
+				className: 'cke_dialog_forms_select_order',
 				children: [ {
 					type: 'vbox',
 					children: [ {
@@ -488,8 +501,9 @@ CKEDITOR.dialog.add( 'select', function( editor ) {
 						accessKey: 'Q',
 						value: 'checked',
 						setup: function( name, element ) {
-							if ( name == 'select' )
-								this.setValue( element.getAttribute( 'required' ) );
+							if ( name == 'select' ) {
+								CKEDITOR.plugins.forms._setupRequiredAttribute.call( this, element );
+							}
 						},
 						commit: function( element ) {
 							if ( this.getValue() )

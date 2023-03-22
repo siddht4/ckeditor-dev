@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,dom,range */
+/* bender-tags: editor,dom,range */
 
 'use strict';
 
@@ -18,7 +18,7 @@ function createPlayground( html ) {
 	html = html.replace( /\./g, '<i class="split"></i>' );
 
 	// Replace % with Filling Character Sequence dummy element.
-	// Dummy will, in turn, be converted into a real FCSeq text node (#13816).
+	// Dummy will, in turn, be converted into a real FCSeq text node (https://dev.ckeditor.com/ticket/13816).
 	html = html.replace( /%/g, '<b class="fcseq"></b>' );
 
 	// Creating empty elements...
@@ -55,7 +55,7 @@ function createPlayground( html ) {
 		split.getItem( i ).remove();
 	}
 
-	// Find the FCSeq dummy element and replace it with a real FCSeq (#13816).
+	// Find the FCSeq dummy element and replace it with a real FCSeq (https://dev.ckeditor.com/ticket/13816).
 	var fillingCharDummy = playground.findOne( '.fcseq' );
 
 	if ( fillingCharDummy ) {
@@ -266,6 +266,51 @@ addBookmarkTCs( tcs, {
 
 		'#10301 1': [ '<p>a.b<i>c</i>d.e</p>', { sc: '#e', so: 0, ec: '#e', eo: 1 }, { sc: 'p', so: 5, ec: 'p', eo: 6 }, { sc: 'p', so: 4, ec: 'p', eo: 5 } ],
 		'#10301 2': [ '<p>a.b<i>c</i>d.e</p>', { sc: 'p', so: 4, ec: 'p', eo: 5 }, { sc: 'p', so: 5, ec: 'p', eo: 6 } ]
+	},
+
+	// (#3423)
+	'temporary elements': {
+		'start (collapsed)': [ '<p>a<span data-cke-temp="1"></span>b</p>',
+			{ sc: 'span', so: 0 },
+			{ sc: 'p', so: 2 },
+			{ sc: 'p', so: 1 }
+		],
+
+		'start (uncollapsed)': [ '<p>a<span data-cke-temp="1"></span>b</p>',
+			{ sc: 'span', so: 0, ec: '#b', eo: 1 },
+			{ sc: 'p', so: 2, ec: 'p', eo: 4 },
+			{ sc: 'p', so: 1, ec: 'p', eo: 3 }
+		],
+
+		'end': [ '<p>a</p><div data-cke-temp="1"></div><p>b</p>',
+			{ sc: '#a', so: 0, ec: 'div', eo: 0 },
+			{ sc: 'p', so: 1, ec: 'root', eo: 2 },
+			{ sc: 'p', so: 0, ec: 'root', eo: 2 }
+		],
+
+		'start and end': [ '<p>a<span data-cke-temp="1"></span>b<em data-cke-temp="1"></em>c</p>',
+			{ sc: 'span', so: 0, ec: 'em', eo: 0 },
+			{ sc: 'p', so: 2, ec: 'p', eo: 5 },
+			{ sc: 'p', so: 1, ec: 'p', eo: 4 }
+		],
+
+		'start and end (non-empty)': [ '<p>a<span data-cke-temp="1">b</span>c<em data-cke-temp="1">d</em>e</p>',
+			{ sc: '#b', so: 0, ec: '#d', eo: 0 },
+			{ sc: 'p', so: 2, ec: 'p', eo: 5 },
+			{ sc: 'p', so: 1, ec: 'p', eo: 4 }
+		],
+
+		'copybin': [ '<p>a<span id="cke_copybin" data-cke-temp="1"></span></p>',
+			{ sc: 'span', so: 0 },
+			{ sc: 'span', so: 1 },
+			{ sc: 'span', so: 0 }
+		],
+
+		'pastebin': [ '<p>a<span id="cke_pastebin" data-cke-temp="1"></span></p>',
+			{ sc: 'span', so: 0 },
+			{ sc: 'span', so: 1 },
+			{ sc: 'span', so: 0 }
+		]
 	}
 } );
 
@@ -372,7 +417,7 @@ addBookmark2TCs( tcs, {
 		'#10301 2': [ '<p>a.b<i>c</i>d.e</p>', { sc: 'p', so: 4, ec: 'p', eo: 5 }, { sc: '#de', so: 1, ec: 'p', eo: 3 } ]
 	},
 
-	// #13816
+	// https://dev.ckeditor.com/ticket/13816
 	'filling character sequence': {
 		'tc 1': [ '<p>abc</p><p><b>%def</b></p>', { sc: '#abc', so: 1, ec: '#def', eo: FCSLength + 2 }, { sc: '#abc', so: 1, ec: '#def', eo: 2 } ],
 		'tc 2': [ '%abc<b>def</b>', { sc: '#abc', so: FCSLength + 1, ec: '#def', eo: 1 }, { sc: '#abc', so: 1, ec: '#def', eo: 1 } ],
@@ -392,8 +437,12 @@ addBookmark2TCs( tcs, {
 		'tc 6': [ '<b>%(foo)<i>def</i></b>', { sc: 'b', so: 2, ec: '#def', eo: 1 }, { sc: 'b', so: 0, ec: '#def', eo: 1 } ],
 		'tc 6b': [ '<b>%(foo)(bar)<i>def</i></b>', { sc: 'b', so: 2, ec: '#def', eo: 1 }, { sc: 'b', so: 0, ec: '#def', eo: 1 } ],
 		'tc 6c': [ '<b>%(foo)(bar)<i>def</i></b>', { sc: '(bar)', so: 0, ec: '#def', eo: 1 }, { sc: 'b', so: 0, ec: '#def', eo: 1 } ],
+
 		// between foo and bar.
-		'tc 6d': [ '<b>abc%(foo)(bar)cba<i>def</i></b>', { sc: 'b', so: 3, ec: '#def', eo: 1 }, { sc: '#abccba', so: 3, ec: '#def', eo: 1 } ]
+		'tc 6d': [ '<b>abc%(foo)(bar)cba<i>def</i></b>', { sc: 'b', so: 3, ec: '#def', eo: 1 }, { sc: '#abccba', so: 3, ec: '#def', eo: 1 } ],
+
+		// (#3158)
+		'tc 7a': [ '(foo)<b>a</b>%<b>b</b>', { sc: '%', so: 1 }, { sc: 'root', so: 1 } ]
 	}
 } );
 

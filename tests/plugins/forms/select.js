@@ -1,5 +1,9 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor,dialog */
 /* bender-ckeditor-plugins: dialog,button,forms,htmlwriter,toolbar */
+/* bender-include: _helpers/tools.js */
+/* global formsTools */
+
+var assertRequiredAttribute = formsTools.assertRequiredAttribute;
 
 bender.editor = {
 	config: {
@@ -8,6 +12,44 @@ bender.editor = {
 };
 
 bender.test( {
+	tearDown: function() {
+		var dialog = CKEDITOR.dialog.getCurrent();
+
+		if ( dialog ) {
+			dialog.hide();
+		}
+	},
+
+	// (#2423)
+	'test dialog model during select creation': function() {
+		var bot = this.editorBot,
+			editor = this.editor;
+
+		bot.setData( '', function() {
+			bot.dialog( 'select', function( dialog ) {
+				assert.isNull( dialog.getModel( editor ) );
+				assert.areEqual( CKEDITOR.dialog.CREATION_MODE, dialog.getMode( editor ) );
+			} );
+		} );
+	},
+
+	// (#2423)
+	'test dialog model with existing select': function() {
+		var bot = this.editorBot,
+			editor = this.editor;
+
+		bot.setData( '<select name="name" />', function() {
+			bot.dialog( 'select', function( dialog ) {
+				var select = editor.editable().findOne( 'select' );
+
+				editor.getSelection().selectElement( select );
+
+				assert.areEqual( select, dialog.getModel( editor ) );
+				assert.areEqual( CKEDITOR.dialog.EDITING_MODE, dialog.getMode( editor ) );
+			} );
+		} );
+	},
+
 	'test fill basic fields': function() {
 		var bot = this.editorBot;
 
@@ -49,5 +91,35 @@ bender.test( {
 
 			assert.areSame( '<select></select>', bot.getData( false, true ) );
 		} );
-	}
+	},
+
+	'test required attribute collapsed': assertRequiredAttribute( {
+		html: '[<select required></select>]',
+		type: 'select',
+		expected: true
+	} ),
+
+	'test required attribute without value': assertRequiredAttribute( {
+		html: '[<select required=""></select>]',
+		type: 'select',
+		expected: true
+	} ),
+
+	'test required attribute with value `required`': assertRequiredAttribute( {
+		html: '[<select required="required"></select>]',
+		type: 'select',
+		expected: true
+	} ),
+
+	'test required attribute absent': assertRequiredAttribute( {
+		html: '[<select></select>]',
+		type: 'select',
+		expected: false
+	} ),
+
+	'test required attribute with invalid value': assertRequiredAttribute( {
+		html: '[<select required="any value other than empty string or required"></select>]',
+		type: 'select',
+		expected: true
+	} )
 } );

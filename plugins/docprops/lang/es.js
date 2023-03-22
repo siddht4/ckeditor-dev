@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'docprops', 'es', {
 	bgColor: 'Color de fondo',
@@ -33,7 +33,7 @@ CKEDITOR.plugins.setLang( 'docprops', 'es', {
 	metaAuthor: 'Autor',
 	metaCopyright: 'Copyright',
 	metaDescription: 'Descripción del documento',
-	metaKeywords: 'Palabras claves del documento separadas por coma (meta keywords)',
+	metaKeywords: 'Palabras claves del documento (separadas por coma)',
 	other: 'Otro...',
 	previewHtml: '<p>Este es un <strong>texto de ejemplo</strong>. Usted está usando <a href="javascript:void(0)">CKEditor</a>.</p>',
 	title: 'Propiedades del documento',

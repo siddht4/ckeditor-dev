@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'forms', 'el', {
 	button: {
@@ -16,7 +16,7 @@ CKEDITOR.plugins.setLang( 'forms', 'el', {
 		radioTitle: 'Ιδιότητες Κουμπιού Επιλογής',
 		value: 'Τιμή',
 		selected: 'Επιλεγμένο',
-		required: 'Required' // MISSING
+		required: 'Απαιτείται'
 	},
 	form: {
 		title: 'Ιδιότητες Φόρμας',
@@ -38,7 +38,7 @@ CKEDITOR.plugins.setLang( 'forms', 'el', {
 		size: 'Μέγεθος',
 		lines: 'γραμμές',
 		chkMulti: 'Να επιτρέπονται οι πολλαπλές επιλογές',
-		required: 'Required', // MISSING
+		required: 'Απαιτείται',
 		opText: 'Κείμενο',
 		opValue: 'Τιμή',
 		btnAdd: 'Προσθήκη',
@@ -59,7 +59,7 @@ CKEDITOR.plugins.setLang( 'forms', 'el', {
 		value: 'Τιμή',
 		charWidth: 'Πλάτος Χαρακτήρων',
 		maxChars: 'Μέγιστοι χαρακτήρες',
-		required: 'Required', // MISSING
+		required: 'Απαιτείται',
 		type: 'Τύπος',
 		typeText: 'Κείμενο',
 		typePass: 'Κωδικός',

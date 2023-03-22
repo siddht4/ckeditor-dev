@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,widget */
+/* bender-tags: editor,widget */
 /* bender-ckeditor-plugins: mathjax,dialog,toolbar,preview,clipboard,basicstyles,undo,wysiwygarea */
 
 ( function() {
@@ -51,9 +51,7 @@
 		},
 
 		'async:init': function() {
-			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) {
-				assert.ignore();
-			}
+			bender.tools.ignoreUnsupportedEnvironment( 'mathjax' );
 
 			var tc = this;
 
@@ -69,7 +67,8 @@
 			} );
 
 			CKEDITOR.once( 'mathJaxUpdateDone', function() {
-				tc.callback();
+				// Deffer executing test callback since calling it synchronously fails in Chrome (starting from 85 version) (#4232).
+				setTimeout( tc.callback, 0 );
 			} );
 		},
 

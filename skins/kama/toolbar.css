@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 
 /*
@@ -104,6 +104,10 @@ a.cke_button
 	border: 0;
 }
 
+a.cke_button_expandable {
+	padding: 2px 3px;
+}
+
 .cke_rtl .cke_button
 {
 	float: right;
@@ -175,6 +179,31 @@ a.cke_button_off:active
 	opacity: 1;
 }
 
+/* Disable hover styles on mobile devices (#4611). */
+@media screen and ( hover: none ) {
+	a.cke_button_off:hover
+	{
+		background: transparent;
+		opacity: 0.7;
+	}
+
+	a.cke_button_on:hover {
+		background-color: #a3d7ff;
+	}
+
+	/* We need to restore :active styles. */
+	a.cke_button_off:active
+	{
+		background-color: #dff1ff;
+		opacity: 1;
+	}
+
+	a.cke_button_on:active
+	{
+		background-color: #86caff;
+	}
+}
+
 /* The icon which is a visual representation of the button. */
 .cke_button_icon
 {
@@ -229,7 +258,7 @@ a.cke_button_off:active
 {
 	/* Arrow in CSS */
 	display: inline-block;
-	margin: 7px 0 0 1px;
+	margin: 7px 0 0 3px;
 	width: 0;
 	height: 0;
 	border-width: 3px;

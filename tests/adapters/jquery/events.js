@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,jquery */
+/* bender-tags: editor,jquery */
 /* bender-ckeditor-adapters: jquery */
 /* bender-ckeditor-plugins: wysiwygarea */
 /* global $ */
@@ -21,7 +21,7 @@ bender.test( {
 		var listener;
 
 		while ( ( listener = this.tearDownListeners.pop() ) )
-			this.editor.unbind( listener[ 0 ], listener[ 1 ] );
+			this.editor.off( listener[ 0 ], listener[ 1 ] );
 	},
 
 	'test event instanceReady': function() {

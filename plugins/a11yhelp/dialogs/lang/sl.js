@@ -1,28 +1,28 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'sl', {
-	title: 'Navodila Dostopnosti',
-	contents: 'Vsebina Pomoči. Če želite zapreti to pogovorno okno pritisnite ESC.',
+	title: 'Navodila za dostopnost',
+	contents: 'Vsebina pomoči. Če želite zapreti pogovorno okno, pritisnite ESC.',
 	legend: [
 		{
 		name: 'Splošno',
 		items: [
 			{
-			name: 'Urejevalna Orodna Vrstica',
+			name: 'Orodna vrstica urejevalnika',
 			legend: 'Pritisnite ${toolbarFocus} za pomik v orodno vrstico. Z TAB in SHIFT+TAB se pomikate na naslednjo in prejšnjo skupino orodne vrstice. Z DESNO PUŠČICO ali LEVO PUŠČICO se pomikate na naslednji in prejšnji gumb orodne vrstice. Pritisnite SPACE ali ENTER, da aktivirate gumb orodne vrstice.'
 		},
 
 			{
 			name: 'Urejevalno Pogovorno Okno',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively. Press ESC to discard changes and close the dialog. The focus will be moved back to the editing area upon leaving the dialog.'  // MISSING
 		},
 
 			{
-			name: 'Urejevalni Kontekstni Meni',
+			name: 'Kontekstni meni urejevalnika',
 			legend: 'Pritisnite ${contextMenu} ali APPLICATION KEY, da odprete kontekstni meni. Nato se premaknite na naslednjo možnost menija s tipko TAB ali PUŠČICA DOL. Premakniti se na prejšnjo možnost z SHIFT + TAB ali PUŠČICA GOR. Pritisnite SPACE ali ENTER za izbiro možnosti menija. Odprite podmeni trenutne možnosti menija s tipko SPACE ali ENTER ali DESNA PUŠČICA. Vrnite se na matični element menija s tipko ESC ali LEVA PUŠČICA. Zaprite kontekstni meni z ESC.'
 		},
 
@@ -77,33 +77,30 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sl', {
 			legend: 'Pritisnite ${accessNextSpace} za dostop do najbližjega nedosegljivega osredotočenega prostora po strešici, npr.: dva sosednja HR elementa. Ponovite kombinacijo tipk, da dosežete oddaljene osredotočene prostore.'
 		},
 			{
-			name: 'Pomoč Dostopnosti',
+			name: 'Pomoč dostopnosti',
 			legend: 'Pritisnite ${a11yHelp}'
+		},
+			{
+			name: ' Paste as plain text', // MISSING
+			legend: 'Press ${pastetext}', // MISSING
+			legendEdge: 'Press ${pastetext}, followed by ${paste}' // MISSING
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Page Up',
 	pageDown: 'Page Down',
-	end: 'End',
-	home: 'Home',
-	leftArrow: 'Levo puščica',
-	upArrow: 'Gor puščica',
-	rightArrow: 'Desno puščica',
-	downArrow: 'Dol puščica',
+	leftArrow: 'Puščica levo',
+	upArrow: 'Puščica gor',
+	rightArrow: 'Puščica desno',
+	downArrow: 'Puščica dol',
 	insert: 'Insert',
-	'delete': 'Delete',
-	leftWindowKey: 'Leva Windows tipka',
-	rightWindowKey: 'Desna Windows tipka',
+	leftWindowKey: 'Leva tipka Windows',
+	rightWindowKey: 'Desna tipka Windows',
 	selectKey: 'Select tipka',
 	numpad0: 'Numpad 0',
 	numpad1: 'Numpad 1',
@@ -135,7 +132,7 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sl', {
 	numLock: 'Num Lock',
 	scrollLock: 'Scroll Lock',
 	semiColon: 'Podpičje',
-	equalSign: 'enačaj',
+	equalSign: 'Enačaj',
 	comma: 'Vejica',
 	dash: 'Vezaj',
 	period: 'Pika',
@@ -143,6 +140,6 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sl', {
 	graveAccent: 'Krativec',
 	openBracket: 'Oklepaj',
 	backSlash: 'Leva poševnica',
-	closeBracket: 'Oklepaj',
+	closeBracket: 'Zaklepaj',
 	singleQuote: 'Opuščaj'
 } );

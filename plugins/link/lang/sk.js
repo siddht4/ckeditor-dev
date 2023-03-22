@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'sk', {
 	acccessKey: 'Prístupový kľúč',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'sk', {
 		title: 'Vlastnosti kotvy',
 		name: 'Názov kotvy',
 		errorName: 'Zadajte prosím názov kotvy',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Odstrániť kotvu'
 	},
 	anchorId: 'Podľa Id objektu',
 	anchorName: 'Podľa mena kotvy',
 	charset: 'Priradená znaková sada',
 	cssClasses: 'Triedy štýlu',
+	download: 'Vynútené sťahovanie.',
+	displayText: 'Zobraziť text',
 	emailAddress: 'E-Mailová adresa',
 	emailBody: 'Telo správy',
 	emailSubject: 'Predmet správy',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'sk', {
 	noAnchors: '(V dokumente nie sú dostupné žiadne kotvy)',
 	noEmail: 'Zadajte prosím e-mailovú adresu',
 	noUrl: 'Zadajte prosím URL odkazu',
+	noTel: 'Zadajte prosím telefónne číslo',
 	other: '<iný>',
+	phoneNumber: 'Telefónne číslo',
 	popupDependent: 'Závislosť (Netscape)',
 	popupFeatures: 'Vlastnosti vyskakovacieho okna',
 	popupFullScreen: 'Celá obrazovka (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'sk', {
 	toAnchor: 'Odkaz na kotvu v texte',
 	toEmail: 'E-mail',
 	toUrl: 'URL',
+	toPhone: 'Telefón',
 	toolbar: 'Odkaz',
 	type: 'Typ odkazu',
 	unlink: 'Odstrániť odkaz',

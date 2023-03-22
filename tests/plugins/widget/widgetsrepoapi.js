@@ -24,6 +24,7 @@
 	bender.editor = {
 		config: {
 			allowedContent: true,
+			language: 'en',
 			on: {
 				loaded: function( evt ) {
 					Widget = CKEDITOR.plugins.widget;
@@ -50,7 +51,7 @@
 	}
 
 	function keysLength( obj ) {
-		return CKEDITOR.tools.objectKeys( obj ).length;
+		return CKEDITOR.tools.object.keys( obj ).length;
 	}
 
 	var fixHtml = widgetTestsTools.fixHtml,
@@ -229,6 +230,7 @@
 
 			assert.areSame( 'span', wrapper.getName(), 'inline wrapper name' );
 			assert.areSame( el, wrapper.getFirst(), 'inline wrapper first child' );
+			assert.isTrue( wrapper.hasClass( 'cke_widget_test' ), 'wrapper has css class based on widget name' );
 			assert.isMatching(
 				new RegExp( '^<p>foo<span ' + widgetWrapperAttributes + '><em data-cke-widget-keep-attr="1" data-widget="test">foo</em></span>bar(<br />)?</p>$' ),
 				fixHtml( editor.editable().getHtml() )
@@ -248,6 +250,7 @@
 
 			assert.areSame( 'div', wrapper.getName(), 'block wrapper name' );
 			assert.areSame( el, wrapper.getFirst(), 'block wrapper first child' );
+			assert.isTrue( wrapper.hasClass( 'cke_widget_test' ), 'wrapper has css class based on widget name' );
 			assert.isMatching(
 				new RegExp( '^<p>foo(<br />)?</p><div ' + widgetWrapperAttributes + '><div data-cke-widget-keep-attr="1" data-widget="test">foo</div></div><p>bar(<br />)?</p>$' ),
 				fixHtml( editor.editable().getHtml() ), 'HTML after 1st wrapElement()'
@@ -275,6 +278,7 @@
 
 			assert.areSame( 'span', wrapper.getName(), 'inline wrapper name' );
 			assert.areSame( el, wrapper.getFirst(), 'inline wrapper first child' );
+			assert.isTrue( wrapper.hasClass( 'cke_widget_test' ), 'wrapper has css class based on widget name' );
 			assert.isMatching(
 				new RegExp( '^<p>foo<span ' + widgetWrapperAttributes + '><span data-cke-widget-keep-attr="0" data-widget="test">foo</span></span>bar(<br />)?</p>$' ),
 				fixHtml( editor.editable().getHtml() )
@@ -332,6 +336,7 @@
 			var wrapper = this.editor.widgets.wrapElement( el, 'test' );
 
 			assert.areSame( 'span', wrapper.name, 'inline wrapper name' );
+			assert.isTrue( wrapper.hasClass( 'cke_widget_test' ), 'wrapper has css class based on widget name' );
 			assert.areSame( el, wrapper.children[ 0 ], 'inline wrapper first child' );
 			assert.isMatching( new RegExp( '^<p>foo<span ' + widgetWrapperAttributes + '><span data-cke-widget-keep-attr="0" data-widget="test">foo</span></span>bar</p>$' ), writeFrag( frag ) );
 		},
@@ -1087,7 +1092,7 @@
 
 				editor.widgets.checkWidgets();
 
-				assert.areSame( 0, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 0, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be no widgets in repo.' );
 
 				editable.setHtml( html );
@@ -1097,7 +1102,7 @@
 				var wrappers = editable.find( '.cke_widget_wrapper' );
 
 				assert.areSame( 2, wrappers.count(), 'There should be 2 wrappers.' );
-				assert.areSame( 2, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 2, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be 2 widgets in repo.' );
 
 				for ( var i = 0, count = wrappers.count(); i < count; i++ ) {
@@ -1163,7 +1168,7 @@
 				editor.editable().setHtml( '' );
 				editor.widgets.checkWidgets();
 
-				assert.areSame( 0, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 0, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be no widgets in repo at the beginning.' );
 
 				// Set HTML with two widgets - w1, w2, w3.
@@ -1175,7 +1180,7 @@
 
 				editor.widgets.checkWidgets();
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be one widget.' );
 
 				assert.isNull( getWidgetById( editor, 'w2' ), 'There should be no widget on #w2' );
@@ -1304,7 +1309,7 @@
 
 				editor.widgets.checkWidgets( { initOnlyNew: true } );
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be one widget.' );
 
 				assert.isNull( getWidgetById( editor, 'w2' ), 'There should be no widget on #w2' );
@@ -1321,7 +1326,7 @@
 
 				editor.widgets.checkWidgets( { focusInited: true } );
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be one widget.' );
 
 				var sel = editor.getSelection();
@@ -1339,7 +1344,7 @@
 
 				editor.widgets.checkWidgets( { focusInited: true } );
 
-				assert.areSame( 2, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 2, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be two widgets.' );
 
 				var sel = editor.getSelection();
@@ -1361,7 +1366,7 @@
 
 				editor.widgets.checkWidgets( { focusInited: true, initOnlyNew: true } );
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be one widget.' );
 
 				var sel = editor.getSelection();
@@ -1409,7 +1414,7 @@
 
 				listener.removeListener();
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There still should be one widget.' );
 			} );
 		},
@@ -1429,7 +1434,7 @@
 
 				listener.removeListener();
 
-				assert.areSame( 1, CKEDITOR.tools.objectKeys( editor.widgets.instances ).length,
+				assert.areSame( 1, CKEDITOR.tools.object.keys( editor.widgets.instances ).length,
 					'There should be one widget.' );
 
 				assert.isFalse( !!editor.getSelection().isFake, 'Widget should not be focused' );
@@ -1696,6 +1701,12 @@
 
 		'test Widget.isDomDragHandlerContainer - <em class="cke_widget_drag_handler_container"></em>': function() {
 			assert.isTrue( Widget.isDomDragHandlerContainer( domEmWidgetDragHandlerContainer ) );
+		},
+
+		'test Widget.isDomWidget - all': function() {
+			assert.isFalse( Widget.isDomWidget( domEm ), 'domEm' );
+			assert.isTrue( Widget.isDomWidget( domEmDataWidgetTest ), 'domEmDataWidgetTest' );
+			assert.isTrue( Widget.isDomWidget( domEmDataWidgetWrapperTrue ), 'domEmDataWidgetWrapperTrue' );
 		}
 	} );
 } )();

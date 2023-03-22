@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,image */
+/* bender-tags: editor,image,dialog */
 /* bender-ckeditor-plugins: image,button,toolbar,link */
 
 ( function() {
@@ -106,6 +106,44 @@
 	}
 
 	bender.test( {
+		tearDown: function() {
+			var dialog = CKEDITOR.dialog.getCurrent();
+
+			if ( dialog ) {
+				dialog.hide();
+			}
+		},
+
+		// (#2423)
+		'test image dialog model during image creation': function() {
+			var bot = this.editorBot,
+				editor = this.editor;
+
+			bot.setData( '', function() {
+				bot.dialog( 'image', function( dialog ) {
+					assert.isNull( dialog.getModel( editor ) );
+					assert.areEqual( CKEDITOR.dialog.CREATION_MODE, dialog.getMode( editor ) );
+				} );
+			} );
+		},
+
+		// (#2423)
+		'test dialog model with existing image': function() {
+			var bot = this.editorBot,
+				editor = this.editor;
+
+			bot.setData( '<image src="' + SRC + '"/>', function() {
+				bot.dialog( 'image', function( dialog ) {
+					var img = editor.editable().findOne( 'img' );
+
+					editor.getSelection().selectElement( img );
+
+					assert.areEqual( img, dialog.getModel( editor ) );
+					assert.areEqual( CKEDITOR.dialog.EDITING_MODE, dialog.getMode( editor ) );
+				} );
+			} );
+		},
+
 		'test read image (inline styles)': function() {
 			var htmlWithSelection = '[<img src="' + SRC + '" style="border:solid 2px;height:86px;margin:10px 5px;float:right;width:414px;">]';
 
@@ -245,7 +283,7 @@
 			} );
 		},
 
-		// #10867
+		// https://dev.ckeditor.com/ticket/10867
 		'test set encoded URI as image\'s link': function() {
 			var uri = 'http://ckeditor.dev/?q=%C5rsrapport';
 			var htmlWithSelection = '<p>[<img src="' + SRC + '" />]</p>';
@@ -256,7 +294,7 @@
 			} );
 		},
 
-		// #12132
+		// https://dev.ckeditor.com/ticket/12132
 		'test width and height not set when not allowed': function() {
 			bender.editorBot.create( {
 				name: 'editor_disallowed_dimension',
@@ -289,7 +327,7 @@
 		},
 
 		/**
-		 * #12126
+		 * https://dev.ckeditor.com/ticket/12126
 		 *
 		 * 1. Open image dialog.
 		 * 2. Set some proper image url and focus out.
@@ -335,8 +373,42 @@
 			} );
 		},
 
+		// (#2254)
+		'test lock ratio status after image resize': function() {
+			var image = imgs[ 1 ];
+			bender.editorBot.create( {
+				name: 'editor_lockratio'
+			},
+				function( bot ) {
+					bot.dialog( 'image', function( dialog ) {
+						var stub = sinon.stub( dialog, 'getValueOf', function( field, prop ) {
+							return prop === 'txtWidth' ? getFixedImageSize( 'width' ) : getFixedImageSize( 'height' );
+						} );
+
+						dialog.originalElement.once( 'load', function() {
+							setTimeout( function() {
+								resume( function() {
+									stub.restore();
+									assert.isTrue( dialog.lockRatio );
+								} );
+							} );
+
+						}, null, null, 999 );
+
+						// Changing image url triggers load event.
+						dialog.getContentElement( 'info', 'txtUrl' ).setValue( image.url );
+
+						wait();
+
+						function getFixedImageSize( prop ) {
+							return Math.round( Number( image[ prop ] ) / 3.6 );
+						}
+					} );
+				} );
+		},
+
 		/**
-		 * #12126
+		 * https://dev.ckeditor.com/ticket/12126
 		 *
 		 * 1. Open image dialog.
 		 * 2. Set some proper image url and focus out.
@@ -462,13 +534,7 @@
 
 		'test replace link with text': function() {
 			var htmlWithSelection = '<p>x[<a href="#">foo bar</a>]x</p>';
-			var expectedOutput;
-
-			// IE8 has some problems with selecting whole <a> element.
-			if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
-				expectedOutput = '<p>x<img alt="" src="' + SRC + '" style="height:10px;width:10px;" />x</p>';
-			else
-				expectedOutput = '<p>x<a href="#"><img alt="" src="' + SRC + '" style="height:10px;width:10px;" /></a>x</p>';
+			var expectedOutput = '<p>x<a href="#"><img alt="" src="' + SRC + '" style="height:10px;width:10px;" /></a>x</p>';
 
 			testUpdateImage( this.editorBot, htmlWithSelection, expectedOutput, {
 				txtUrl: SRC,

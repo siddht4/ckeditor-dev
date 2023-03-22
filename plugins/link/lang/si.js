@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'si', {
 	acccessKey: 'ප්‍රවේශ  යතුර',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'si', {
 		title: 'ආධාරක ',
 		name: 'ආධාරකයේ නාමය',
 		errorName: 'කරුණාකර ආධාරකයේ නාමය ඇතුල් කරන්න',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'ආධාරකය ඉවත් කිරීම'
 	},
 	anchorId: 'By Element Id', // MISSING
 	anchorName: 'By Anchor Name', // MISSING
 	charset: 'Linked Resource Charset', // MISSING
 	cssClasses: 'විලාසපත්‍ර පන්තිය',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'E-Mail Address', // MISSING
 	emailBody: 'Message Body', // MISSING
 	emailSubject: 'Message Subject', // MISSING
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'si', {
 	noAnchors: '(No anchors available in the document)', // MISSING
 	noEmail: 'Please type the e-mail address', // MISSING
 	noUrl: 'Please type the link URL', // MISSING
+	noTel: 'Please type the phone number', // MISSING
 	other: '<other>', // MISSING
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Dependent (Netscape)', // MISSING
 	popupFeatures: 'Popup Window Features', // MISSING
 	popupFullScreen: 'Full Screen (IE)', // MISSING
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'si', {
 	toAnchor: 'Link to anchor in the text', // MISSING
 	toEmail: 'E-mail', // MISSING
 	toUrl: 'URL',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'සබැඳිය',
 	type: 'Link Type', // MISSING
 	unlink: 'Unlink', // MISSING

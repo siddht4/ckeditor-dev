@@ -1,6 +1,6 @@
 ﻿/**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 ( function() {
@@ -14,8 +14,6 @@
 	function setToolbarStates( editor, path ) {
 		var useComputedState = editor.config.useComputedState,
 			selectedElement;
-
-		useComputedState = useComputedState === undefined || useComputedState;
 
 		// We can use computedState provided by the browser or traverse parents manually.
 		if ( !useComputedState )
@@ -80,7 +78,7 @@
 			}
 		}
 
-		var useComputedState = ( 'useComputedState' in editor.config ) ? editor.config.useComputedState : 1;
+		var useComputedState = editor.config.useComputedState;
 
 		var elementDir = useComputedState ? element.getComputedStyle( 'direction' ) : element.getStyle( 'direction' ) || element.hasAttribute( 'dir' );
 
@@ -183,7 +181,7 @@
 							}
 
 							return !!( isNodeElement( node ) && isGuard( node ) && !( node.is( enterTagName ) && isNodeElement( node.getParent() ) && node.getParent().is( 'blockquote' ) ) &&
-							// Element must be fully included in the range as well. (#6485).
+							// Element must be fully included in the range as well. (https://dev.ckeditor.com/ticket/6485).
 							node.getPosition( start ) & CKEDITOR.POSITION_FOLLOWING &&
 							( ( node.getPosition( end ) & CKEDITOR.POSITION_PRECEDING + CKEDITOR.POSITION_CONTAINS ) == CKEDITOR.POSITION_PRECEDING ) );
 						};
@@ -212,7 +210,7 @@
 
 	CKEDITOR.plugins.add( 'bidi', {
 		// jscs:disable maximumLineLength
-		lang: 'af,ar,bg,bn,bs,ca,cs,cy,da,de,de-ch,el,en,en-au,en-ca,en-gb,eo,es,et,eu,fa,fi,fo,fr,fr-ca,gl,gu,he,hi,hr,hu,id,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sr,sr-latn,sv,th,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
+		lang: 'af,ar,az,bg,bn,bs,ca,cs,cy,da,de,de-ch,el,en,en-au,en-ca,en-gb,eo,es,es-mx,et,eu,fa,fi,fo,fr,fr-ca,gl,gu,he,hi,hr,hu,id,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,oc,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sr,sr-latn,sv,th,tr,tt,ug,uk,vi,zh,zh-cn', // %REMOVE_LINE_CORE%
 		// jscs:enable maximumLineLength
 		icons: 'bidiltr,bidirtl', // %REMOVE_LINE_CORE%
 		hidpi: true, // %REMOVE_LINE_CORE%
@@ -227,6 +225,7 @@
 
 				if ( editor.ui.addButton ) {
 					editor.ui.addButton( buttonName, {
+						isToggle: true,
 						label: buttonLabel,
 						command: commandName,
 						toolbar: 'bidi,' + order
@@ -260,7 +259,7 @@
 
 	// If the element direction changed, we need to switch the margins of
 	// the element and all its children, so it will get really reflected
-	// like a mirror. (#5910)
+	// like a mirror. (https://dev.ckeditor.com/ticket/5910)
 	function isOffline( el ) {
 		var html = el.getDocument().getBody().getParent();
 		while ( el ) {

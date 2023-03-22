@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,clipboard,widget,notification,filetools */
+/* bender-tags: editor,clipboard,widget,notification,filetools */
 /* bender-ckeditor-plugins: uploadwidget,toolbar,undo,basicstyles */
 
 'use strict';
@@ -45,9 +45,7 @@ bender.test( {
 	},
 
 	setUp: function() {
-		if ( !CKEDITOR.plugins.clipboard.isFileApiSupported ) {
-			assert.ignore();
-		}
+		bender.tools.ignoreUnsupportedEnvironment( 'uploadwidget' );
 
 		notificationShowStub.reset();
 		notificationUpdateStub.reset();

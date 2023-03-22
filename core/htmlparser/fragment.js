@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 'use strict';
@@ -61,7 +61,7 @@ CKEDITOR.htmlParser.fragment = function() {
 		if ( node.attributes[ 'data-cke-survive' ] )
 			return false;
 
-		// Empty link is to be removed when empty but not anchor. (#7894)
+		// Empty link is to be removed when empty but not anchor. (https://dev.ckeditor.com/ticket/7894)
 		return node.name == 'a' && node.attributes.href || CKEDITOR.dtd.$removeEmpty[ node.name ];
 	}
 
@@ -130,7 +130,7 @@ CKEDITOR.htmlParser.fragment = function() {
 						i--;
 					} else {
 						// Some element of the same type cannot be nested, flat them,
-						// e.g. <a href="#">foo<a href="#">bar</a></a>. (#7894)
+						// e.g. <a href="#">foo<a href="#">bar</a></a>. (https://dev.ckeditor.com/ticket/7894)
 						if ( pendingName == currentNode.name )
 							addElement( currentNode, currentNode.parent, 1 ), i--;
 					}
@@ -143,7 +143,36 @@ CKEDITOR.htmlParser.fragment = function() {
 				addElement( pendingBRs.shift(), currentNode );
 		}
 
-		// Rtrim empty spaces on block end boundary. (#3585)
+		function shiftBRsPosition() {
+			var shiftLineBreaks = CKEDITOR.config.shiftLineBreaks;
+
+			if ( shiftLineBreaks === true || !pendingBRs.length ) {
+				return;
+			}
+
+			if ( typeof shiftLineBreaks !== 'function' ) {
+				sendPendingBRs();
+				return;
+			}
+
+			var result = shiftLineBreaks( pendingBRs[ pendingBRs.length - 1 ] );
+
+			if ( result === true ) {
+				return;
+			}
+
+			sendPendingBRs();
+
+			if ( result instanceof CKEDITOR.htmlParser.text ) {
+				currentNode.add( result );
+			}
+
+			if ( result instanceof CKEDITOR.htmlParser.element ) {
+				addElement( result, currentNode );
+			}
+		}
+
+		// Rtrim empty spaces on block end boundary. (https://dev.ckeditor.com/ticket/3585)
 		function removeTailWhitespace( element ) {
 			if ( element._.isBlockLike && element.name != 'pre' && element.name != 'textarea' ) {
 
@@ -275,10 +304,10 @@ CKEDITOR.htmlParser.fragment = function() {
 				// If the element cannot be child of the current element.
 				if ( !element.isUnknown && !currentNode.isUnknown && !currentDtd[ tagName ] ) {
 					// Current node doesn't have a close tag, time for a close
-					// as this element isn't fit in. (#7497)
+					// as this element isn't fit in. (https://dev.ckeditor.com/ticket/7497)
 					if ( currentNode.isOptionalClose )
 						parser.onTagClose( currentName );
-					// Fixing malformed nested lists by moving it into a previous list item. (#3828)
+					// Fixing malformed nested lists by moving it into a previous list item. (https://dev.ckeditor.com/ticket/3828)
 					else if ( tagName in listBlocks && currentName in listBlocks ) {
 						var children = currentNode.children,
 							lastChild = children[ children.length - 1 ];
@@ -291,7 +320,7 @@ CKEDITOR.htmlParser.fragment = function() {
 						currentNode = lastChild;
 					}
 					// Establish new list root for orphan list items, but NOT to create
-					// new list for the following ones, fix them instead. (#6975)
+					// new list for the following ones, fix them instead. (https://dev.ckeditor.com/ticket/6975)
 					// <dl><dt>foo<dd>bar</dl>
 					// <ul><li>foo<li>bar</ul>
 					else if ( tagName in CKEDITOR.dtd.$listItem &&
@@ -380,8 +409,11 @@ CKEDITOR.htmlParser.fragment = function() {
 
 				currentNode = candidate;
 
-				if ( candidate._.isBlockLike )
+				if ( candidate._.isBlockLike ) {
 					sendPendingBRs();
+				} else {
+					shiftBRsPosition();
+				}
 
 				addElement( candidate, candidate.parent );
 
@@ -409,7 +441,7 @@ CKEDITOR.htmlParser.fragment = function() {
 			var currentName = currentNode.name,
 				currentDtd = currentName ? ( CKEDITOR.dtd[ currentName ] || ( currentNode._.isBlockLike ? CKEDITOR.dtd.div : CKEDITOR.dtd.span ) ) : rootDtd;
 
-			// Fix orphan text in list/table. (#8540) (#8870)
+			// Fix orphan text in list/table. (https://dev.ckeditor.com/ticket/8540) (https://dev.ckeditor.com/ticket/8870)
 			if ( !inTextarea && !currentDtd[ '#' ] && currentName in nonBreakingBlocks ) {
 				parser.onTagOpen( structureFixes[ currentName ] || '' );
 				parser.onText( text );
@@ -507,7 +539,7 @@ CKEDITOR.htmlParser.fragment = function() {
 		/**
 		 * Filter this fragment's content with given filter.
 		 *
-		 * @since 4.1
+		 * @since 4.1.0
 		 * @param {CKEDITOR.htmlParser.filter} filter
 		 */
 		filter: function( filter, context ) {
@@ -525,7 +557,7 @@ CKEDITOR.htmlParser.fragment = function() {
 		 * Element's children may only be filtered once by one
 		 * instance of filter.
 		 *
-		 * @since 4.1
+		 * @since 4.1.0
 		 * @param {CKEDITOR.htmlParser.filter} filter
 		 * @param {Boolean} [filterRoot] Whether to apply the "root" filter rule specified in the `filter`.
 		 */
@@ -596,7 +628,7 @@ CKEDITOR.htmlParser.fragment = function() {
 		},
 
 		/**
-		 * Execute callback on each node (of given type) in this document fragment.
+		 * Execute callback on each node (of a given type) in this document fragment.
 		 *
 		 *		var fragment = CKEDITOR.htmlParser.fragment.fromHtml( '<p>foo<b>bar</b>bom</p>' );
 		 *		fragment.forEach( function( node ) {
@@ -610,9 +642,9 @@ CKEDITOR.htmlParser.fragment = function() {
 		 *		// 5. "bar" text node,
 		 *		// 6. "bom" text node.
 		 *
-		 * @since 4.1
+		 * @since 4.1.0
 		 * @param {Function} callback Function to be executed on every node.
-		 * **Since 4.3** if `callback` returned `false` descendants of current node will be ignored.
+		 * **Since 4.3.0** if `callback` returned `false` descendants of current node will be ignored.
 		 * @param {CKEDITOR.htmlParser.node} callback.node Node passed as argument.
 		 * @param {Number} [type] If specified `callback` will be executed only on nodes of this type.
 		 * @param {Boolean} [skipRoot] Don't execute `callback` on this fragment.
@@ -643,4 +675,69 @@ CKEDITOR.htmlParser.fragment = function() {
 			return context || {};
 		}
 	};
+
+	/**
+	 * Indicates if line breaks (`br`) should be moved outside inline elements.
+	 *
+	 * **Note:** This is a global configuration that applies to all instances.
+	 *
+	 * By default, all children `br` elements, placed at the end of an inline element,
+	 * are shifted outside that element. Shifted elements are attached at the end of the parent block element.
+	 * It allows producing more clean HTML output without an abundance of
+	 * orphaned styling markers. This logic can be changed by disabling shifting line breaks or providing
+	 * a custom function allowing to conditionally choose proper behavior.
+	 *
+	 * * `shiftLineBreaks = true`
+	 *
+	 * Shift line breaks outside inline element:
+	 *
+	 * 		<p><strong>hello, world!<br><br></strong></p>
+	 *
+	 * will become:
+	 *
+	 * 		<p><strong>hello, world!</strong><br><br></p>
+	 *
+	 * * `shiftLineBreaks = false`
+	 *
+	 * Keep line breaks inside an inline element:
+	 *
+	 * 		<p><strong>hello, world!<br><br></strong></p>
+	 *
+	 * * `shiftLineBreaks = customFunction`
+	 *
+	 * Provide a callback function allowing to decide if a line break should be shifted:
+	 *
+	 * ```javascript
+	 * CKEDITOR.config.shiftLineBreaks = function() {
+	 * 	if ( condition ) {
+	 * 		// Shift line break outside element.
+	 * 		return true;
+	 * 	}
+	 * 	// Keep line break inside element.
+	 * 	return false;
+	 * }
+	 * ```
+	 *
+	 * You can also decide to return the {@link CKEDITOR.htmlParser.text} or {@link CKEDITOR.htmlParser.element}
+	 * node that will be attached **at the end of the last `br` node** inside an inline element.
+	 *
+	 * As an example, you may want to add an additional `&nbsp;` filler to make sure that a user will be
+	 * able to place caret after break lines:
+	 *
+	 * ```javascript
+	 * CKEDITOR.config.shiftLineBreaks = function() {
+	 * 	// Append `nbsp;` character at the end.
+	 * 	return new CKEDITOR.htmlParser.text( '&nbsp;' );
+	 * }
+	 * ```
+	 *
+	 * resulting in:
+	 *
+	 * 		<p><strong>hello, world!<br><br>&nbsp;</strong></p>
+	 *
+	 * @cfg {Boolean/Function} [shiftLineBreaks=true]
+	 * @member CKEDITOR.config
+	 */
+
+	CKEDITOR.config.shiftLineBreaks = true;
 } )();

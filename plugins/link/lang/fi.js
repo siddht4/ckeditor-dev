@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'fi', {
 	acccessKey: 'Pikanäppäin',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'fi', {
 		title: 'Ankkurin ominaisuudet',
 		name: 'Nimi',
 		errorName: 'Ankkurille on kirjoitettava nimi',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Poista ankkuri'
 	},
 	anchorId: 'Ankkurin ID:n mukaan',
 	anchorName: 'Ankkurin nimen mukaan',
 	charset: 'Linkitetty kirjaimisto',
 	cssClasses: 'Tyyliluokat',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'Sähköpostiosoite',
 	emailBody: 'Viesti',
 	emailSubject: 'Aihe',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'fi', {
 	noAnchors: '(Ei ankkureita tässä dokumentissa)',
 	noEmail: 'Kirjoita sähköpostiosoite',
 	noUrl: 'Linkille on kirjoitettava URL',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<muu>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Riippuva (Netscape)',
 	popupFeatures: 'Popup ikkunan ominaisuudet',
 	popupFullScreen: 'Täysi ikkuna (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'fi', {
 	toAnchor: 'Ankkuri tässä sivussa',
 	toEmail: 'Sähköposti',
 	toUrl: 'Osoite',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Lisää linkki/muokkaa linkkiä',
 	type: 'Linkkityyppi',
 	unlink: 'Poista linkki',

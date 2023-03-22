@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor */
 
 function parseHtml( raw, parent ) {
 	var fragment = CKEDITOR.htmlParser.fragment.fromHtml( raw, parent || 'body', 'p' ),
@@ -9,6 +9,11 @@ function parseHtml( raw, parent ) {
 }
 
 bender.test( {
+	setUp: function() {
+		// Restore default option.
+		CKEDITOR.config.shiftLineBreaks = true;
+	},
+
 	test_parser_1: function() {
 		assert.areSame( '<p><b>2</b> Test</p><table><tr><td>1</td><td>3</td></tr></table>',
 						parseHtml( '<table><tr><td>1</td><p><b>2</b> Test</p><td>3</td></tr></table>' ) );
@@ -113,7 +118,7 @@ bender.test( {
 	},
 
 	/**
-	 * Test fixing malformed nested list structure. (#3828)
+	 * Test fixing malformed nested list structure. (https://dev.ckeditor.com/ticket/3828)
 	 */
 	test_parser_13: function() {
 		assert.areSame( '<ul><li><ol></ol></li></ul>',
@@ -195,7 +200,7 @@ bender.test( {
 		assert.areSame( output,			parseHtml( source, 'figcaption' ),	'figcaption context - between blocks' );
 	},
 
-	// Test whitespaces handling in different context. (#3715)
+	// Test whitespaces handling in different context. (https://dev.ckeditor.com/ticket/3715)
 	'parse pre-formatted contents': function() {
 		var pre = '<pre>\t\tfoo\nbar quz  \n</pre>',
 			textarea = '<p><textarea>\t\tfoo\nbar quz  \n</textarea></p>';
@@ -249,7 +254,7 @@ bender.test( {
 						parseHtml( '<table><strong>foo</strong><tr>bar</tr></table>' ) );
 		assert.areSame( '<tr><td>foo</td></tr>', parseHtml( '<tr>foo</tr>' ) );
 
-		// #11660
+		// https://dev.ckeditor.com/ticket/11660
 		assert.areSame( '<table><tbody><tr><td>1</td></tr><tr><td>Issue2</td></tr><tr><td>3</td></tr></tbody></table>',
 			parseHtml( '<table><tbody><tr><td>1</td></tr>Issue2<tr><td>3</td></tr></tbody></table>' ) );
 	},
@@ -305,7 +310,7 @@ bender.test( {
 						parseHtml( '<div><b><font><span>A</font></span></b></div><div>X</div>' ) );
 	},
 
-	// #3862
+	// https://dev.ckeditor.com/ticket/3862
 	'test not breaking on malformed close tag': function() {
 		assert.areSame(
 			'<p><span><a><b>test</b></a><a><b>test</b></a><a><b>test</b></a><a><b>test</b></a><a><b>test</b></a>' +
@@ -328,7 +333,7 @@ bender.test( {
 		assert.areSame( '<div>pseudo<p>paragraph</p></div>', parseHtml( '<div>pseudo <p>paragraph</p></div>' ) );
 	},
 
-	// #5626
+	// https://dev.ckeditor.com/ticket/5626
 	'test parser fix partial list items': function() {
 		assert.areSame( '<table><tr><td><ul><li>item1</li><li>item2</li></ul></td></tr></table>',
 						parseHtml( '<table><tr><td><li>item1</li><li>item2</li></td></tr></table>' ) );
@@ -340,7 +345,7 @@ bender.test( {
 						parseHtml( '<dd>test</dd><dd>test</dd>' ) );
 	},
 
-	// #5626
+	// https://dev.ckeditor.com/ticket/5626
 	'test parser *NOT* fixing orphan table cells': function() {
 		assert.areSame( '<td>td1</td><p>text</p>',
 						parseHtml( '<td>td1</td>text' ) );
@@ -348,7 +353,7 @@ bender.test( {
 						parseHtml( '<ul><tr><td>td1</td></tr><li>li1</li></ul>' ) );
 	},
 
-	// #5626
+	// https://dev.ckeditor.com/ticket/5626
 	'test parser fix malformed table cell/list item': function() {
 		assert.areSame( '<table><tr><td>cell1</td><td>cell2</td></tr></table>',
 						parseHtml( '<table><tr><td>cell1<td>cell2</td></td></tr></table>' ) );
@@ -356,7 +361,7 @@ bender.test( {
 						parseHtml( '<ul><li>item1<li>item2</li></li></ul>' ) );
 	},
 
-	// #7894
+	// https://dev.ckeditor.com/ticket/7894
 	'test parser fix malformed link': function() {
 		assert.areSame( '<p>foo<a href="#2">bar</a></p><p>foo bar</p>',
 						parseHtml( '<p>foo<a href="#1"><a href="#2">bar</a></p> <p>foo</a> bar</p>' ) );
@@ -400,5 +405,51 @@ bender.test( {
 		fragment = CKEDITOR.htmlParser.fragment.fromHtml( '<p>A<b>B<i>C</i></b></p>' );
 		fragment.writeChildrenHtml( writer, filter, true );
 		assert.areSame( '<p x="1">A<b x="1">B<i x="1">C</i></b></p><div x="1">X</div>', writer.getHtml( true ) );
+	},
+
+	// (#4986)
+	'test shiftLineBreaks = false': function() {
+		CKEDITOR.config.shiftLineBreaks = false;
+		var html = '<p><strong>hello, world!<br /><br /></strong></p>';
+		assert.areSame( html, parseHtml( html ) );
+	},
+
+	// (#4986)
+	'test shiftLineBreaks = callback returning false': function() {
+		CKEDITOR.config.shiftLineBreaks = function() {
+			return false;
+		};
+		var html = '<p><strong>hello, world!<br /><br /></strong></p>';
+		assert.areSame( html, parseHtml( html ) );
+	},
+
+	// (#4986)
+	'test shiftLineBreaks = callback returning true': function() {
+		CKEDITOR.config.shiftLineBreaks = function() {
+			return true;
+		};
+
+		assert.areSame( '<p><strong>hello, world!</strong><br /><br /></p>',
+			parseHtml( '<p><strong>hello, world!<br /><br /></strong></p>' ) );
+	},
+
+	// (#4986)
+	'test shiftLineBreaks = callback returning text node': function() {
+		CKEDITOR.config.shiftLineBreaks = function() {
+			return new CKEDITOR.htmlParser.text( '&nbsp;' );
+		};
+
+		assert.areSame( '<p><strong>hello, world!<br /><br />&nbsp;</strong></p>',
+			parseHtml( '<p><strong>hello, world!<br /><br /></strong></p>' ) );
+	},
+
+	// (#4986)
+	'test shiftLineBreaks = callback returning element node': function() {
+		CKEDITOR.config.shiftLineBreaks = function() {
+			return new CKEDITOR.htmlParser.element( 'br' );
+		};
+
+		assert.areSame( '<p><strong>hello, world!<br /><br /><br /></strong></p>',
+			parseHtml( '<p><strong>hello, world!<br /><br /></strong></p>' ) );
 	}
 } );

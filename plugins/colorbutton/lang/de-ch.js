@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'colorbutton', 'de-ch', {
 	auto: 'Automatisch',
@@ -45,7 +45,29 @@ CKEDITOR.plugins.setLang( 'colorbutton', 'de-ch', {
 		F0FFFF: 'Azurblau',
 		F0F8FF: 'Alice Blau',
 		E6E6FA: 'Lavendel',
-		FFF: 'Weiss'
+		FFF: 'Weiss',
+		'1ABC9C': 'Kräftiges Türkis',
+		'2ECC71': 'Smaragdgrün',
+		'3498DB': 'Helles Blau',
+		'9B59B6': 'Amethystblau',
+		'4E5F70': 'Graublau',
+		'F1C40F': 'Lebhaftes Gelb',
+		'16A085': 'Dunkeltürkis',
+		'27AE60': 'Dunkles Smaragdgrün',
+		'2980B9': 'Kräftiges Blau',
+		'8E44AD': 'Dunkelvilolett',
+		'2C3E50': 'Entsättigtes blau',
+		'F39C12': 'Orange',
+		'E67E22': 'Karotte',
+		'E74C3C': 'Blassrot',
+		'ECF0F1': 'Glänzendes Silber',
+		'95A5A6': 'Helles Graublau',
+		'DDD': 'Hellgrau',
+		'D35400': 'Kürbisfarben',
+		'C0392B': 'Kräftiges Rot',
+		'BDC3C7': 'Silber',
+		'7F8C8D': 'Graucyan',
+		'999': 'Dunkelgrau'
 	},
 	more: 'Weitere Farben...',
 	panelTitle: 'Farben',

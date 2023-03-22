@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'is', {
 	acccessKey: 'Skammvalshnappur',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'is', {
 		title: 'Eigindi kaflamerkis',
 		name: 'Nafn bókamerkis',
 		errorName: 'Sláðu inn nafn bókamerkis!',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Remove Anchor'
 	},
 	anchorId: 'Eftir auðkenni einingar',
 	anchorName: 'Eftir akkerisnafni',
 	charset: 'Táknróf',
 	cssClasses: 'Stílsniðsflokkur',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'Netfang',
 	emailBody: 'Meginmál',
 	emailSubject: 'Efni',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'is', {
 	noAnchors: '<Engin bókamerki á skrá>',
 	noEmail: 'Sláðu inn netfang!',
 	noUrl: 'Sláðu inn veffang stiklunnar!',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<annar>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Háð venslum (Netscape)',
 	popupFeatures: 'Eigindi sprettiglugga',
 	popupFullScreen: 'Heilskjár (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'is', {
 	toAnchor: 'Bókamerki á þessari síðu',
 	toEmail: 'Netfang',
 	toUrl: 'Vefslóð',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Stofna/breyta stiklu',
 	type: 'Stikluflokkur',
 	unlink: 'Fjarlægja stiklu',

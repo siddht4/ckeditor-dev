@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 ( function() {
@@ -8,7 +8,8 @@
 	// http://www.w3.org/TR/REC-html40/present/frames.html#h-16.5
 	var checkboxValues = {
 		scrolling: { 'true': 'yes', 'false': 'no' },
-		frameborder: { 'true': '1', 'false': '0' }
+		frameborder: { 'true': '1', 'false': '0' },
+		tabindex: { 'true': '-1', 'false': false }
 	};
 
 	function loadValue( iframeNode ) {
@@ -23,15 +24,17 @@
 	}
 
 	function commitValue( iframeNode ) {
-		var isRemove = this.getValue() === '',
+		var value = this.getValue(),
+			attributeName = this.att || this.id,
 			isCheckbox = this instanceof CKEDITOR.ui.dialog.checkbox,
-			value = this.getValue();
-		if ( isRemove )
-			iframeNode.removeAttribute( this.att || this.id );
-		else if ( isCheckbox )
-			iframeNode.setAttribute( this.id, checkboxValues[ this.id ][ value ] );
-		else
-			iframeNode.setAttribute( this.att || this.id, value );
+			attributeValue = isCheckbox ? checkboxValues[ this.id ][ value ] : value,
+			isRemove = value === '' || ( attributeName === 'tabindex' && value === false );
+
+		if ( isRemove ) {
+			iframeNode.removeAttribute( attributeName );
+		} else {
+			iframeNode.setAttribute( attributeName, attributeValue );
+		}
 	}
 
 	CKEDITOR.dialog.add( 'iframe', function( editor ) {
@@ -42,6 +45,15 @@
 			title: iframeLang.title,
 			minWidth: 350,
 			minHeight: 260,
+			getModel: function( editor ) {
+				var element = editor.getSelection().getSelectedElement();
+
+				if ( element && element.data( 'cke-real-element-type' ) === 'iframe' ) {
+					return element;
+				}
+
+				return null;
+			},
 			onShow: function() {
 				// Clear previously saved elements.
 				this.fakeImage = this.iframeNode = null;
@@ -65,10 +77,14 @@
 
 				// A subset of the specified attributes/styles
 				// should also be applied on the fake element to
-				// have better visual effect. (#5240)
+				// have better visual effect. (https://dev.ckeditor.com/ticket/5240)
 				var extraStyles = {},
 					extraAttributes = {};
 				this.commitContent( iframeNode, extraStyles, extraAttributes );
+
+				var attributes = editor.plugins.iframe._.getIframeAttributes( editor, iframeNode );
+
+				iframeNode.setAttributes( attributes );
 
 				// Refresh the fake image.
 				var newFakeImage = editor.createFakeElement( iframeNode, 'cke_iframe', 'iframe', true );
@@ -129,8 +145,8 @@
 						'default': '',
 						items: [
 							[ commonLang.notSet, '' ],
-							[ commonLang.alignLeft, 'left' ],
-							[ commonLang.alignRight, 'right' ],
+							[ commonLang.left, 'left' ],
+							[ commonLang.right, 'right' ],
 							[ commonLang.alignTop, 'top' ],
 							[ commonLang.alignMiddle, 'middle' ],
 							[ commonLang.alignBottom, 'bottom' ]
@@ -154,7 +170,7 @@
 				},
 				{
 					type: 'hbox',
-					widths: [ '50%', '50%' ],
+					widths: [ '33%', '33%', '33%' ],
 					children: [ {
 						id: 'scrolling',
 						type: 'checkbox',
@@ -168,6 +184,14 @@
 						type: 'checkbox',
 						requiredContent: 'iframe[frameborder]',
 						label: iframeLang.border,
+						setup: loadValue,
+						commit: commitValue
+					},
+					{
+						id: 'tabindex',
+						type: 'checkbox',
+						requiredContent: 'iframe[tabindex]',
+						label: iframeLang.tabindex,
 						setup: loadValue,
 						commit: commitValue
 					} ]

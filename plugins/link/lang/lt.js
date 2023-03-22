@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'lt', {
 	acccessKey: 'Prieigos raktas',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'lt', {
 		title: 'Žymės savybės',
 		name: 'Žymės vardas',
 		errorName: 'Prašome įvesti žymės vardą',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Pašalinti žymę'
 	},
 	anchorId: 'Pagal žymės Id',
 	anchorName: 'Pagal žymės vardą',
 	charset: 'Susietų išteklių simbolių lentelė',
 	cssClasses: 'Stilių lentelės klasės',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'El.pašto adresas',
 	emailBody: 'Žinutės turinys',
 	emailSubject: 'Žinutės tema',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'lt', {
 	noAnchors: '(Šiame dokumente žymių nėra)',
 	noEmail: 'Prašome įvesti el.pašto adresą',
 	noUrl: 'Prašome įvesti nuorodos URL',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<kitas>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Priklausomas (Netscape)',
 	popupFeatures: 'Išskleidžiamo lango savybės',
 	popupFullScreen: 'Visas ekranas (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'lt', {
 	toAnchor: 'Žymė šiame puslapyje',
 	toEmail: 'El.paštas',
 	toUrl: 'Nuoroda',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Įterpti/taisyti nuorodą',
 	type: 'Nuorodos tipas',
 	unlink: 'Panaikinti nuorodą',

@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor */
 /* bender-ckeditor-plugins: list,table,undo */
 /* global quirksTools */
 
@@ -17,8 +17,14 @@
 			// Preventing removing empty <small> tag.
 			delete CKEDITOR.dtd.$removeEmpty.small;
 
-			if ( !CKEDITOR.env.webkit )
+			if ( !CKEDITOR.env.webkit ) {
 				assert.ignore();
+			}
+
+			// Prevent selection optimizations from breaking tests (#3175).
+			this.editor.on( 'selectionCheck', function( evt ) {
+				evt.cancel();
+			}, null, null, -1000 );
 		},
 
 		'test backspace records undo snapshots': function() {
@@ -94,7 +100,7 @@
 		'test backspace and delete, bogus #3':			bd( '<p>[@</p><p>]@</p>', '<p>^@</p>' ),
 		'test backspace and delete, bogus #4':			bd( '<p>@[</p><p>]@</p>', '<p>^@</p>' ),
 
-		// #12503.
+		// https://dev.ckeditor.com/ticket/12503.
 		'test backspace and delete, bogus #5':			bd( '<h1>{Foo</h1><p>bar</p><p><small>baz}</small></p>', '<h1>^@!</h1>' ),
 
 		// Merge inline elements after keystroke.

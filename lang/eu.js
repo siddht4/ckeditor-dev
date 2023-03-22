@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 /**
@@ -19,6 +19,7 @@
  */
 CKEDITOR.lang[ 'eu' ] = {
 	// ARIA description.
+	application: 'Rich Text Editor', // MISSING
 	editor: 'Testu aberastuaren editorea',
 	editorPanel: 'Testu aberastuaren editorearen panela',
 
@@ -34,7 +35,6 @@ CKEDITOR.lang[ 'eu' ] = {
 		upload: 'Kargatu',
 		uploadSubmit: 'Bidali zerbitzarira',
 		image: 'Irudia',
-		flash: 'Flash',
 		form: 'Formularioa',
 		checkbox: 'Kontrol-laukia',
 		radio: 'Aukera-botoia',
@@ -78,23 +78,70 @@ CKEDITOR.lang[ 'eu' ] = {
 		width: 'Zabalera',
 		height: 'Altuera',
 		align: 'Lerrokatzea',
-		alignLeft: 'Ezkerrean',
-		alignRight: 'Eskuinean',
-		alignCenter: 'Erdian',
-		alignJustify: 'Justifikatu',
+		left: 'Ezkerrean',
+		right: 'Eskuinean',
+		center: 'Erdian',
+		justify: 'Justifikatu',
+		alignLeft: 'Lerrokatu ezkerrean',
+		alignRight: 'Lerrokatu eskuinean',
+		alignCenter: 'Align Center', // MISSING
 		alignTop: 'Goian',
 		alignMiddle: 'Erdian',
 		alignBottom: 'Behean',
 		alignNone: 'Bat ere ez',
-		invalidValue	: 'Balio desegokia.',
+		invalidValue: 'Balio desegokia.',
 		invalidHeight: 'Altuera zenbaki bat izan behar da.',
 		invalidWidth: 'Zabalera zenbaki bat izan behar da.',
+		invalidLength: 'Value specified for the "%1" field must be a positive number with or without a valid measurement unit (%2).', // MISSING
 		invalidCssLength: '"%1" eremurako zehaztutako balioak zenbaki positibo bat izan behar du, CSS neurri unitate batekin edo gabe (px, %, in, cm, mm, em, ex, pt edo pc).',
 		invalidHtmlLength: '"%1" eremurako zehaztutako balioak zenbaki positibo bat izan behar du, HTML neurri unitate batekin edo gabe (px edo %).',
 		invalidInlineStyle: 'Lineako estiloan zehaztutako balioak "izen : balio" formatuko tupla bat edo gehiago izan behar dira, komaz bereiztuak.',
 		cssLengthTooltip: 'Sartu zenbaki bat edo zenbaki bat baliozko CSS unitate batekin (px, %, in, cm, mm, em, ex, pt, edo pc).',
 
 		// Put the voice-only part of the label in the span.
-		unavailable: '%1<span class="cke_accessibility">, erabilezina</span>'
+		unavailable: '%1<span class="cke_accessibility">, erabilezina</span>',
+
+		// Keyboard keys translations used for creating shortcuts descriptions in tooltips, context menus and ARIA labels.
+		keyboard: {
+			8: 'Atzera tekla',
+			13: 'Sartu',
+			16: 'Maius',
+			17: 'Ktrl',
+			18: 'Alt',
+			32: 'Zuriunea',
+			35: 'Buka',
+			36: 'Etxea',
+			46: 'Ezabatu',
+			112: 'F1', // MISSING
+			113: 'F2', // MISSING
+			114: 'F3', // MISSING
+			115: 'F4', // MISSING
+			116: 'F5', // MISSING
+			117: 'F6', // MISSING
+			118: 'F7', // MISSING
+			119: 'F8', // MISSING
+			120: 'F9', // MISSING
+			121: 'F10', // MISSING
+			122: 'F11', // MISSING
+			123: 'F12', // MISSING
+			124: 'F13', // MISSING
+			125: 'F14', // MISSING
+			126: 'F15', // MISSING
+			127: 'F16', // MISSING
+			128: 'F17', // MISSING
+			129: 'F18', // MISSING
+			130: 'F19', // MISSING
+			131: 'F20', // MISSING
+			132: 'F21', // MISSING
+			133: 'F22', // MISSING
+			134: 'F23', // MISSING
+			135: 'F24', // MISSING
+			224: 'Komandoa'
+		},
+
+		// Prepended to ARIA labels with shortcuts.
+		keyboardShortcut: 'Laster-tekla',
+
+		optionDefault: 'Lehenetsia'
 	}
 };

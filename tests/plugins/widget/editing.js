@@ -410,6 +410,14 @@
 			var editor = this.editor;
 
 			this.editorBot.setData( '<p></p>', function() {
+				// Force selection in Chrome (#5385).
+				if ( CKEDITOR.env.chrome && editor.getSelection().getType() === CKEDITOR.SELECTION_NONE ) {
+					var range = editor.createRange();
+
+					range.selectNodeContents( editor.editable() );
+					range.select();
+				}
+
 				editor.widgets.add( 'insertingwithoutdialog', {
 					// No dialog defined.
 					template: '<b>foo</b>'
@@ -440,6 +448,24 @@
 				editor.execCommand( 'insertingwithcancel' );
 
 				assert.areSame( '<p>x</p>', editor.getData(), 'widget should not be inserted because edit was canceled' );
+			} );
+		},
+
+		// (#3261)
+		'test widget document': function() {
+			var editor = this.editor;
+
+			this.editorBot.setData( '<p>x</p>', function() {
+				editor.widgets.add( 'insertingdocument', {
+					dialog: 'foo',
+					template: '<b>foo</b>',
+					init: function() {
+						assert.isTrue( this.wrapper.getDocument().equals( editor.document ) );
+					}
+				} );
+
+				editor.focus();
+				editor.execCommand( 'insertingdocument' );
 			} );
 		},
 
@@ -652,7 +678,7 @@
 			} );
 		},
 
-		'test cancelling cancel widget dialog does not destroy widget (#13158).': function() {
+		'test cancelling cancel widget dialog does not destroy widget (https://dev.ckeditor.com/ticket/13158).': function() {
 			var editor = this.editor,
 				originalConfirm = window.confirm;
 

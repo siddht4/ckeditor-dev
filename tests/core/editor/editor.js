@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor */
 
 CKEDITOR.replaceClass = 'ckeditor';
 bender.editor = true;
@@ -347,7 +347,7 @@ bender.test( {
 			name: 'no_notification',
 			creator: 'inline',
 			config: {
-				removePlugins: 'notification'
+				plugins: 'wysiwygarea'
 			}
 		}, function( bot ) {
 			var editor = bot.editor,
@@ -377,5 +377,19 @@ bender.test( {
 		assert.areSame( 'foo', insertHtml.firstCall.args[ 0 ], 'insertHtml dataValue' );
 		assert.areSame( 'html', insertHtml.firstCall.args[ 1 ], 'insertHtml mode' );
 		assert.areSame( range, insertHtml.firstCall.args[ 2 ], 'insertHtml range' );
+	},
+
+	'test isDestroyed method should return proper value': function() {
+		bender.editorBot.create( {
+			name: 'test_isdestroyed'
+		}, function( bot ) {
+			var editor = bot.editor;
+
+			assert.isFalse( editor.isDestroyed() );
+
+			editor.destroy();
+
+			assert.isTrue( editor.isDestroyed() );
+		} );
 	}
 } );

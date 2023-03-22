@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.editorConfig = function( config ) {
@@ -17,6 +17,7 @@ CKEDITOR.editorConfig = function( config ) {
 		'clipboard,' +
 		'colorbutton,' +
 		'colordialog,' +
+		'copyformatting,' +
 		'contextmenu,' +
 		'dialogadvtab,' +
 		'div,' +
@@ -25,7 +26,6 @@ CKEDITOR.editorConfig = function( config ) {
 		'entities,' +
 		'filebrowser,' +
 		'find,' +
-		'flash,' +
 		'floatingspace,' +
 		'font,' +
 		'format,' +
@@ -45,8 +45,11 @@ CKEDITOR.editorConfig = function( config ) {
 		'maximize,' +
 		'newpage,' +
 		'pagebreak,' +
+		'pastefromgdocs,' +
+		'pastefromlibreoffice,' +
 		'pastefromword,' +
 		'pastetext,' +
+		'editorplaceholder,' +
 		'preview,' +
 		'print,' +
 		'removeformat,' +
@@ -61,10 +64,12 @@ CKEDITOR.editorConfig = function( config ) {
 		'stylescombo,' +
 		'tab,' +
 		'table,' +
+		'tableselection,' +
 		'tabletools,' +
 		'templates,' +
 		'toolbar,' +
 		'undo,' +
+		'uploadimage,' +
 		'wysiwygarea';
 	// %REMOVE_END%
 };

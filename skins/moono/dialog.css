@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 
 /*
@@ -299,6 +299,11 @@ a.cke_dialog_tab_selected:focus
 	padding: 2px 6px;
 }
 
+/* #4934 */
+.cke_hc a.cke_dialog_tab:focus {
+	text-decoration: underline;
+}
+
 a.cke_dialog_tab_disabled
 {
 	color: #bababa;
@@ -399,6 +404,13 @@ div.cke_disabled .cke_dialog_ui_labeled_content div *
 	cursor: default;
 }
 
+/* (#3433) */
+.cke_dialog_ui_labeled_required
+{
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
 /*
 Horizontal-Box and Vertical-Box
 ---------------------------------
@@ -468,6 +480,7 @@ It is possible to have nested V/H-Boxes.
 /* Applies to all labeled dialog fields */
 .cke_hc div.cke_dialog_ui_input_text,
 .cke_hc div.cke_dialog_ui_input_password,
+.cke_hc div.cke_dialog_ui_input_tel,
 .cke_hc div.cke_dialog_ui_input_textarea,
 .cke_hc div.cke_dialog_ui_input_select,
 .cke_hc div.cke_dialog_ui_input_file
@@ -523,6 +536,7 @@ textarea.cke_dialog_ui_input_textarea
 
 input.cke_dialog_ui_input_text,
 input.cke_dialog_ui_input_password,
+input.cke_dialog_ui_input_tel,
 textarea.cke_dialog_ui_input_textarea
 {
 	background-color: #fff;
@@ -542,6 +556,7 @@ textarea.cke_dialog_ui_input_textarea
 
 input.cke_dialog_ui_input_text:hover,
 input.cke_dialog_ui_input_password:hover,
+input.cke_dialog_ui_input_tel:hover,
 textarea.cke_dialog_ui_input_textarea:hover
 {
 	border: 1px solid #aeb3b9;
@@ -550,6 +565,7 @@ textarea.cke_dialog_ui_input_textarea:hover
 
 input.cke_dialog_ui_input_text:focus,
 input.cke_dialog_ui_input_password:focus,
+input.cke_dialog_ui_input_tel:focus,
 textarea.cke_dialog_ui_input_textarea:focus,
 select.cke_dialog_ui_input_select:focus
 {
@@ -907,17 +923,6 @@ tendency that these will be moved to the plugins code in the future.
 	filter: alpha(opacity = 90);
 
 	background-color: #e4e4e4;
-}
-
-.cke_dialog .FlashPreviewBox
-{
-	white-space: normal;
-	border: 2px ridge black;
-	overflow: auto;
-	height: 160px;
-	width: 390px;
-	padding: 2px;
-	background-color: white;
 }
 
 .cke_dialog .cke_pastetext

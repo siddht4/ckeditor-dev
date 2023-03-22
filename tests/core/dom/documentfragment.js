@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,dom */
+/* bender-tags: editor,dom */
 
 ( function() {
 	'use strict';
@@ -209,6 +209,38 @@
 			assert.isTrue( inner2.equals( childNodesList.getItem( 1 ) ) );
 		},
 
+		// (#2021)
+		test_find: function() {
+			var frag = new CKEDITOR.dom.documentFragment( CKEDITOR.document ),
+				b1 = new CKEDITOR.dom.element( 'b' ),
+				b2 = new CKEDITOR.dom.element( 'b' ),
+				em = new CKEDITOR.dom.element( 'em' ),
+				found;
+
+			frag.append( b1 );
+			frag.append( b2 );
+			frag.append( em );
+
+			found = frag.find( 'b' );
+			assert.areEqual( 2, found.count() );
+			assert.areEqual( b1, found.getItem( 0 ), 'Found item #1' );
+			assert.areEqual( b2, found.getItem( 1 ), 'Found item #2' );
+		},
+
+		// (#2021)
+		test_findOne: function() {
+			var frag = new CKEDITOR.dom.documentFragment( CKEDITOR.document ),
+				b1 = new CKEDITOR.dom.element( 'b' ),
+				b2 = new CKEDITOR.dom.element( 'b' ),
+				em = new CKEDITOR.dom.element( 'em' );
+
+			frag.append( b1 );
+			frag.append( b2 );
+			frag.append( em );
+
+			assert.areEqual( b1, frag.findOne( 'b' ) );
+		},
+
 		test_getDocument: function() {
 			var doc = CKEDITOR.document,
 				innerDoc = new CKEDITOR.dom.document( doc.getById( 'innerFrame' ).$.contentWindow.document ),
@@ -228,7 +260,7 @@
 			assert.areSame( '<b>foo</b><i>bar</i>', bender.tools.fixHtml( frag.getHtml(), 1, 1 ), 'HTML of documentFragment' );
 		},
 
-		// #13101
+		// https://dev.ckeditor.com/ticket/13101
 		'test getHtml with html5': function() {
 			// IE8 only.
 			if ( !CKEDITOR.env.ie || CKEDITOR.env.version > 8 )

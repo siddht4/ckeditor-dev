@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
@@ -12,13 +12,13 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
 		items: [
 			{
 			name: 'نوار ابزار ویرایشگر',
-			legend: '${toolbarFocus} را برای باز کردن نوار ابزار بفشارید. با کلید Tab و Shift+Tab در مجموعه نوار ابزار بعدی و قبلی حرکت کنید. برای حرکت در کلید نوار ابزار قبلی و بعدی با کلید جهت‌نمای راست و چپ جابجا شوید. کلید Space یا Enter را برای فعال کردن کلید نوار ابزار بفشارید.'
+			legend: 'برای باز کردن نوار ابزار،  {toolbarFocus}$ را بفشارید. با کلید Tab و Shift+Tab به مجموعه نوار ابزار بعدی و یا قبلی بروید. با کلید های جهت نمای راست و چپ روی دکمه های نوار ابزار حرکت کنید. برای فعال کردن دکمه مورد نظر کلید Enter و یا Space را بفشارید. با فعال کردن دکمه مورد نظر، تمرکز به محیط ویرایش باز خواهد گشت.'
 		},
 
 			{
 			name: 'پنجره محاورهای ویرایشگر',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'در داخل یک پنجره محاوره‌ای، کلید Tab را بفشارید تا به پنجره‌ی بعدی بروید، Shift+Tab برای حرکت به فیلد قبلی، فشردن Enter برای ثبت اطلاعات پنجره‌، فشردن Esc برای لغو پنجره محاوره‌ای و برای پنجره‌هایی که چندین برگه دارند، فشردن Alt+F10 یا Tab برای حرکت در برگه ها. وقتی بر فهرست برگه ها هستید، به صفحه بعدی و قبلی با کلید های راستی و چپ حرکت کنید.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'fa', {
 			{
 			name: 'راهنمای دسترسی',
 			legend: 'فشردن ${a11yHelp}'
+		},
+			{
+			name: 'چسباندن به عنوان متن ساده',
+			legend: 'فشردن ${pastetext}',
+			legendEdge: 'فشردن ${pastetext}، همراه با ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'عقبگرد',
 	tab: 'برگه',
-	enter: 'ورود',
-	shift: 'تعویض',
-	ctrl: 'کنترل',
-	alt: 'دگرساز',
 	pause: 'توقف',
 	capslock: 'Caps Lock',
 	escape: 'گریز',
 	pageUp: 'صفحه به بالا',
 	pageDown: 'صفحه به پایین',
-	end: 'پایان',
-	home: 'خانه',
 	leftArrow: 'پیکان چپ',
 	upArrow: 'پیکان بالا',
 	rightArrow: 'پیکان راست',
 	downArrow: 'پیکان پایین',
 	insert: 'ورود',
-	'delete': 'حذف',
 	leftWindowKey: 'کلید چپ ویندوز',
 	rightWindowKey: 'کلید راست ویندوز',
 	selectKey: 'انتخاب کلید',

@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'colorbutton', 'el', {
 	auto: 'Αυτόματα',
@@ -45,7 +45,29 @@ CKEDITOR.plugins.setLang( 'colorbutton', 'el', {
 		F0FFFF: 'Γαλανό',
 		F0F8FF: 'Alice Blue',
 		E6E6FA: 'Ελαφρός Ιώδες',
-		FFF: 'Λευκό'
+		FFF: 'Λευκό',
+		'1ABC9C': 'Έντονο Κυανό',
+		'2ECC71': 'Σμαραγδί',
+		'3498DB': 'Φωτεινό Μπλε',
+		'9B59B6': 'Αμέθυστος',
+		'4E5F70': 'Γκριζωπό Μπλε',
+		'F1C40F': 'Ζωντανό Κίτρινο',
+		'16A085': 'Σκοτεινό Κυανό',
+		'27AE60': 'Σκοτεινό Σμαραγδί',
+		'2980B9': 'Έντονο Μπλε',
+		'8E44AD': 'Σκοτεινό Βιολετί',
+		'2C3E50': 'Αποκορρεσμένο Μπλε',
+		'F39C12': 'Πορτοκαλί',
+		'E67E22': 'Καροτί',
+		'E74C3C': 'Απαλό Κόκκινο',
+		'ECF0F1': 'Φωτεινό Ασημί',
+		'95A5A6': 'Φωτεινό Γκριζωπό Κυανό',
+		'DDD': 'Φωτεινό Γκρι',
+		'D35400': 'Κολοκυθί',
+		'C0392B': 'Έντονο Κόκκινο',
+		'BDC3C7': 'Αργυρό',
+		'7F8C8D': 'Γκριζωπό Κυανό',
+		'999': 'Σκοτεινό Γκρι'
 	},
 	more: 'Περισσότερα Χρώματα…',
 	panelTitle: 'Χρώματα',

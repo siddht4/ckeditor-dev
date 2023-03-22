@@ -1,11 +1,11 @@
 /*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'colordialog', 'sr-latn', {
-	clear: 'Clear', // MISSING
-	highlight: 'Highlight', // MISSING
-	options: 'Color Options', // MISSING
-	selected: 'Selected Color', // MISSING
-	title: 'Select color' // MISSING
+	clear: 'Brisanje',
+	highlight: 'Isticanje',
+	options: 'Vrste boja',
+	selected: 'Odabrano',
+	title: 'Odaberite boju'
 } );

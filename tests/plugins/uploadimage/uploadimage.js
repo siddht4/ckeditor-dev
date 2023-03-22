@@ -1,7 +1,8 @@
-/* bender-tags: editor,unit,clipboard,widget */
+/* bender-tags: editor,clipboard,widget */
 /* bender-ckeditor-plugins: uploadwidget,uploadimage,toolbar,image2 */
 /* bender-include: %BASE_PATH%/plugins/clipboard/_helpers/pasting.js */
-/* global pasteFiles */
+/* bender-include: %BASE_PATH%/plugins/uploadfile/_helpers/waitForImage.js */
+/* global pasteFiles, waitForImage */
 
 'use strict';
 
@@ -19,6 +20,18 @@
 				extraPlugins: 'uploadimage,image',
 				removePlugins: 'image2',
 				imageUploadUrl: 'http://foo/upload',
+				// Disable pasteFilter on Webkits (pasteFilter defaults semantic-text on Webkits).
+				pasteFilter: null
+			}
+		},
+		classicSupportingWebp: {
+			name: 'classicSupportingWebp',
+			creator: 'replace',
+			config: {
+				extraPlugins: 'uploadimage,image',
+				removePlugins: 'image2',
+				imageUploadUrl: 'http://foo/upload',
+				uploadImage_supportedTypes: /image\/(jpeg|png|gif|bmp|webp)/,
 				// Disable pasteFilter on Webkits (pasteFilter defaults semantic-text on Webkits).
 				pasteFilter: null
 			}
@@ -55,6 +68,8 @@
 			CKEDITOR.fileTools.fileLoader.prototype.loadAndUpload = function( url ) {
 				loadAndUploadCount++;
 				lastUploadUrl = url;
+
+				this.responseData = {};
 			};
 
 			CKEDITOR.fileTools.fileLoader.prototype.load = function() {};
@@ -62,13 +77,13 @@
 			CKEDITOR.fileTools.fileLoader.prototype.upload = function( url ) {
 				uploadCount++;
 				lastUploadUrl = url;
+
+				this.responseData = {};
 			};
 		},
 
 		setUp: function() {
-			if ( !CKEDITOR.plugins.clipboard.isFileApiSupported ) {
-				assert.ignore();
-			}
+			bender.tools.ignoreUnsupportedEnvironment( 'uploadimage' );
 
 			var editorName;
 
@@ -102,8 +117,9 @@
 			assertUploadingWidgets( editor, LOADED_IMG );
 			assert.areSame( '', editor.getData(), 'getData on uploading.' );
 
-			// IE needs to wait for image to be loaded so it can read width and height of the image.
-			wait( function() {
+			var image = editor.editable().find( 'img[data-widget="uploadimage"]' ).getItem( 0 );
+
+			waitForImage( image, function() {
 				loader.url = IMG_URL;
 				loader.changeStatus( 'uploaded' );
 
@@ -113,10 +129,10 @@
 				assert.areSame( 1, loadAndUploadCount );
 				assert.areSame( 0, uploadCount );
 				assert.areSame( 'http://foo/upload', lastUploadUrl );
-			}, 10 );
+			} );
 		},
 
-		'test finish upload notification marked as important and is visible (#13032).': function() {
+		'test finish upload notification marked as important and is visible (https://dev.ckeditor.com/ticket/13032).': function() {
 			var editor = this.editors.classic;
 
 			pasteFiles( editor, [ bender.tools.getTestPngFile() ] );
@@ -134,14 +150,15 @@
 
 			assertUploadingWidgets( editor, LOADED_IMG );
 
-			// IE needs to wait for image to be loaded so it can read width and height of the image.
-			wait( function() {
+			var image = editor.editable().find( 'img[data-widget="uploadimage"]' ).getItem( 0 );
+
+			waitForImage( image, function() {
 				loader.url = IMG_URL;
 				loader.changeStatus( 'uploaded' );
 
 				assert.areSame( 1, area.notifications.length, 'Successs notification is present because it\'s important one.' );
 				assert.areSame( 'success', area.notifications[ 0 ].type );
-			}, 10 );
+			} );
 		},
 
 		'test inline with image2 (integration test)': function() {
@@ -160,8 +177,9 @@
 			assertUploadingWidgets( editor, LOADED_IMG );
 			assert.areSame( '', editor.getData(), 'getData on uploading.' );
 
-			// IE needs to wait for image to be loaded so it can read width and height of the image.
-			wait( function() {
+			var image = editor.editable().find( 'img[data-widget="uploadimage"]' ).getItem( 0 );
+
+			waitForImage( image, function() {
 				loader.url = IMG_URL;
 				loader.changeStatus( 'uploaded' );
 
@@ -171,7 +189,7 @@
 				assert.areSame( 1, loadAndUploadCount );
 				assert.areSame( 0, uploadCount );
 				assert.areSame( 'http://foo/upload?type=Images&responseType=json', lastUploadUrl );
-			}, 10 );
+			} );
 		},
 
 		'test paste img as html (integration test)': function() {
@@ -192,8 +210,9 @@
 				assertUploadingWidgets( editor, LOADED_IMG );
 				assert.areSame( '<p>xx</p>', editor.getData(), 'getData on uploading.' );
 
-				// IE needs to wait for image to be loaded so it can read width and height of the image.
-				wait( function() {
+				var image = editor.editable().find( 'img[data-widget="uploadimage"]' ).getItem( 0 );
+
+				waitForImage( image, function() {
 					loader.url = IMG_URL;
 					loader.changeStatus( 'uploaded' );
 
@@ -203,7 +222,35 @@
 					assert.areSame( 0, loadAndUploadCount );
 					assert.areSame( 1, uploadCount );
 					assert.areSame( 'http://foo/upload', lastUploadUrl );
-				}, 10 );
+				} );
+			} );
+		},
+
+		'test setting image dimensions via response (integration test) (https://dev.ckeditor.com/ticket/13794)': function() {
+			var bot = this.editorBots.classic,
+				editor = this.editors.classic;
+
+			bot.setData( '', function() {
+				pasteFiles( editor, [ bender.tools.getTestPngFile() ] );
+
+				var loader = editor.uploadRepository.loaders[ 0 ];
+
+				loader.data = bender.tools.pngBase64;
+				loader.uploadTotal = 10;
+				loader.changeStatus( 'uploading' );
+
+				loader.responseData.width = 555;
+				loader.responseData.height = 444;
+
+				resumeAfter( loader, 'uploaded', function() {
+					assert.sameData( '<p><img src="' + IMG_URL + '" style="height:444px; width:555px" /></p>', editor.getData() );
+					assert.areSame( 0, editor.editable().find( 'img[data-widget="image"]' ).count() );
+				} );
+
+				loader.url = IMG_URL;
+				loader.changeStatus( 'uploaded' );
+
+				wait();
 			} );
 		},
 
@@ -267,6 +314,22 @@
 			} );
 		},
 
+		// (#4400)
+		'test not supportedTypes webp': function() {
+			var bot = this.editorBots.classic,
+				editor = this.editors.classic;
+
+			bot.setData( '', function() {
+				resumeAfter( editor, 'paste', function() {
+					assert.areSame( 0, editor.editable().find( 'img[data-widget="uploadimage"]' ).count() );
+				} );
+
+				pasteFiles( editor, [ { name: 'test.webp', type: 'image/webp' } ] );
+
+				wait();
+			} );
+		},
+
 		'test not supportedTypes tiff': function() {
 			var bot = this.editorBots.classic,
 				editor = this.editors.classic;
@@ -277,6 +340,22 @@
 				} );
 
 				pasteFiles( editor, [ { name: 'test.tiff', type: 'image/tiff' } ] );
+
+				wait();
+			} );
+		},
+
+		// (#4400)
+		'test setting config.uploadImage_supportedTypes allows uploading webp images': function() {
+			var bot = this.editorBots.classicSupportingWebp,
+				editor = this.editors.classicSupportingWebp;
+
+			bot.setData( '', function() {
+				resumeAfter( editor, 'paste', function() {
+					assertUploadingWidgets( editor, LOADING_IMG );
+				} );
+
+				pasteFiles( editor, [ { name: 'test.webp', type: 'image/webp' } ] );
 
 				wait();
 			} );
@@ -499,9 +578,9 @@
 			wait();
 		},
 
-		'test prevent upload fake elements (#13003)': function() {
+		'test prevent upload fake elements (https://dev.ckeditor.com/ticket/13003)': function() {
 			var editor = this.editors.inline,
-				createspy = sinon.spy( editor.uploadRepository, 'create' );
+				createSpy = sinon.spy( editor.uploadRepository, 'create' );
 
 			editor.fire( 'paste', {
 				dataValue: '<img src="data:image/gif;base64,aw==" alt="nothing" data-cke-realelement="some" />'
@@ -509,11 +588,192 @@
 
 			editor.once( 'afterPaste', function() {
 				resume( function() {
-					assert.isTrue( createspy.notCalled );
+					createSpy.restore();
+					assert.isTrue( createSpy.notCalled );
 				} );
 			} );
 
 			wait();
+		},
+
+		'test uploads generate unique names (#1213)': function() {
+			var editor = this.editors.inline,
+				createSpy = sinon.spy( editor.uploadRepository, 'create' );
+
+			editor.fire( 'paste', {
+				dataValue: '<img src="data:image/gif;base64,aw==" alt="gif" />' +
+					'<img src="data:image/gif;base64,aw==" alt="gif" />' +
+					'<img src="data:image/png;base64,aw==" alt="png" />'
+			} );
+
+			editor.once( 'afterPaste', function() {
+				resume( function() {
+					createSpy.restore();
+					assert.areSame( 3, createSpy.callCount, 'create call count' );
+
+					assert.isMatching( /image-\d+-\d+\.gif/, createSpy.args[ 0 ][ 1 ], 'file name passed to first call' );
+					assert.isMatching( /image-\d+-\d+\.gif/, createSpy.args[ 1 ][ 1 ], 'file name passed to second call' );
+					assert.areNotSame( createSpy.args[ 0 ][ 1 ], createSpy.args[ 1 ][ 1 ], 'first and second call names are different' );
+					assert.isMatching( /image-\d+-\d+\.png/, createSpy.args[ 2 ][ 1 ], 'png type is recognized' );
+				} );
+			} );
+
+			wait();
+		},
+
+		'test no error if missing configuration': function() {
+			var spy = sinon.spy( CKEDITOR, 'error' );
+
+			bender.editorBot.create( {
+				name: 'configerror_test',
+				config: {
+					extraPlugins: 'uploadimage'
+				}
+			}, function( bot ) {
+				spy.restore();
+
+				assert.areSame( 0, spy.callCount, 'CKEDITOR.error call count' );
+				assert.isFalse( !!bot.editor.widgets.registered.uploadimage, 'uploadimage widget' );
+			} );
+		},
+
+		// (#5333)
+		'test warning about disabling the clipboard image handling logic (default config value)': createHandlingImageWarnTest(
+			'clipboard-warning-default' ),
+
+		// (#5333)
+		'test warning about disabling the clipboard image handling logic (config value of true)': createHandlingImageWarnTest(
+			'clipboard-warning-true', true ),
+
+		// (#5333)
+		'test warning about disabling the clipboard image handling logic (config value of false)': createHandlingImageWarnTest(
+			'clipboard-warning-false', false ),
+
+		// (#5333)
+		'test original file name is preserved after the upload': function() {
+			bender.editorBot.create( {
+				name: 'clipboard-integration-original-file-name',
+				config: {
+					uploadUrl: '%BASE_PATH',
+					extraPlugins: 'uploadimage'
+				}
+			}, function( bot ) {
+				var editor = bot.editor,
+					imageName = 'test.png',
+					image = {
+						name: imageName,
+						type: 'image/png'
+					};
+
+				bot.setData( '', function() {
+					resumeAfter( editor, 'paste', function() {
+						var widget = CKEDITOR.tools.object.values( editor.widgets.instances )[ 0 ],
+							loader = widget._getLoader();
+
+						assert.areSame( imageName, loader.fileName, 'The name of the uploaded file' );
+					} );
+
+					pasteFilesWithFilesMimeType( editor, [ image ] );
+
+					wait();
+				} );
+			} );
+		},
+
+		// (#5414)
+		'test change event is fired after upload finishes': function() {
+			bender.editorBot.create( {
+				name: 'undo-integration-change-after-upload',
+				config: {
+					uploadUrl: '%BASE_PATH',
+					extraPlugins: 'uploadimage'
+				}
+			}, function( bot ) {
+				var editor = bot.editor,
+					imageName = 'test.png',
+					image = {
+						name: imageName,
+						type: 'image/png'
+					},
+					loader;
+
+				bot.setData( '', function() {
+					editor.once( 'change', function( evt ) {
+						resume( function() {
+							var editorData = evt.editor.getData(),
+								containsUploadedImageUrl = editorData.indexOf( 'src="' + IMG_URL ) !== -1;
+
+							assert.isTrue( containsUploadedImageUrl );
+						} );
+					} );
+
+					pasteFilesWithFilesMimeType( editor, [ image ] );
+
+					loader = editor.uploadRepository.loaders[ 0 ];
+
+					loader.url = IMG_URL;
+					loader.changeStatus( 'uploaded' );
+
+					wait();
+				} );
+			} );
 		}
 	} );
+
+	function createHandlingImageWarnTest( editorName, configValue ) {
+		return function() {
+			var spy = sinon.spy( CKEDITOR, 'warn' ),
+				editorConfig =  {
+					uploadUrl: '%BASE_PATH',
+					extraPlugins: 'uploadimage'
+				};
+
+			if ( configValue !== undefined ) {
+				editorConfig.clipboard_handleImages = configValue;
+			}
+
+			bender.editorBot.create( {
+				name: editorName,
+				config: editorConfig
+			}, function() {
+				var warnCalls = spy.args,
+					expectedWarnDetails = {
+						editor: editorName,
+						plugin: 'uploadimage'
+					};
+
+				spy.restore();
+
+				var warningCalled = spy.calledWith( 'clipboard-image-handling-disabled', expectedWarnDetails );
+
+				if ( configValue === false ) {
+					assert.isFalse( warningCalled, 'CKEDITOR.warn should not be called' );
+				} else {
+					assert.isTrue( warningCalled, 'CKEDITOR.warn should be called' );
+
+					var warningDetails = CKEDITOR.tools.array.find( warnCalls, function( item ) {
+						return item[ 0 ] === 'clipboard-image-handling-disabled';
+					} );
+
+					objectAssert.areDeepEqual( expectedWarnDetails, warningDetails[ 1 ],
+						'CKEDITOR.warn should include proper details' );
+				}
+			} );
+		};
+	}
+
+	function pasteFilesWithFilesMimeType( editor, files, pasteMethod ) {
+		var	nativeData = bender.tools.mockNativeDataTransfer(),
+			dataTransfer;
+
+		pasteMethod = pasteMethod || 'paste';
+		nativeData.files = files;
+		nativeData.types.push( 'Files' );
+		dataTransfer = new CKEDITOR.plugins.clipboard.dataTransfer( nativeData );
+
+		editor.fire( 'paste', {
+			dataTransfer: dataTransfer,
+			dataValue: ''
+		} );
+	}
 } )();

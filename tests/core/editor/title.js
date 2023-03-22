@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit */
+/* bender-tags: editor */
 /* bender-ckeditor-plugins: wysiwygarea,floatingspace,toolbar */
 
 ( function() {
@@ -10,10 +10,6 @@
 		var	editable = editor.editable();
 
 		return editable.isInline() ? editable : editor.window.getFrame();
-	}
-
-	function getVoiceLabel( editor ) {
-		return CKEDITOR.document.getById( 'cke_' + editor.name + '_arialbl' );
 	}
 
 	function assertTitle( expected, editor, msg ) {
@@ -38,17 +34,6 @@
 				assert.isFalse( element.hasAttribute( 'title' ), 'Title attribute set on editable of ' + editor.name );
 		} else {
 			assert.isTrue( !!~element.getAttribute( 'title' ).indexOf( editor.title ), 'editor.title used as an attribute of editable of ' + editor.name );
-		}
-	}
-
-	function assertVoiceLabelIsBasedOnTitle( editor ) {
-		var element = getVoiceLabel( editor );
-
-		if ( !editor.title ) {
-			assert.isNull( element, 'editor: ' + editor.name );
-		} else {
-			assert.isNotNull( element, 'editor: ' + editor.name + ' - element' );
-			assert.areSame( editor.title, element.getText(), 'editor: ' + editor.name + ' - value' );
 		}
 	}
 
@@ -163,9 +148,19 @@
 
 	bender.test( {
 		'init': function() {
+			var initialDelay = CKEDITOR.focusManager._.blurDelay;
+
+			// Due to asynchronous nature of editor's blurring,
+			// blur handler is called after switching focus to the next editor.
+			// In case of inline editors in Chrome it causes to clear the selection
+			// and breaks the editor.
+			CKEDITOR.focusManager._.blurDelay = 0;
+
 			for ( var name in bender.editors ) {
 				bender.editors[ name ].insertText( name );
 			}
+
+			CKEDITOR.focusManager._.blurDelay = initialDelay;
 		},
 
 		'test config.title implies editor.title': function() {
@@ -202,12 +197,6 @@
 				assertTitleSetOnEditable( this.editors[ i ] );
 		},
 
-		'test voice label have properly set title': function() {
-			for ( var i in this.editors ) {
-				assertVoiceLabelIsBasedOnTitle( this.editors[ i ] );
-			}
-		},
-
 		'test restore title after instance is destroyed': function() {
 			var tcs = {
 					existing1: 'foo',
@@ -215,7 +204,7 @@
 					existing3: 'moo',
 					existing4: 'boo'
 				},
-				names = CKEDITOR.tools.objectKeys( tcs );
+				names = CKEDITOR.tools.object.keys( tcs );
 
 			function next() {
 				var name = names.shift();

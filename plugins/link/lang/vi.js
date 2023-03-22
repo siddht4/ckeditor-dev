@@ -1,6 +1,6 @@
-/*
-Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.md or http://ckeditor.com/license
+﻿/*
+Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
 */
 CKEDITOR.plugins.setLang( 'link', 'vi', {
 	acccessKey: 'Phím hỗ trợ truy cập',
@@ -13,12 +13,15 @@ CKEDITOR.plugins.setLang( 'link', 'vi', {
 		title: 'Thuộc tính điểm neo',
 		name: 'Tên của điểm neo',
 		errorName: 'Hãy nhập vào tên của điểm neo',
+		errorWhitespace: 'Anchor name cannot contain space characters', // MISSING
 		remove: 'Xóa neo'
 	},
 	anchorId: 'Theo định danh thành phần',
 	anchorName: 'Theo tên điểm neo',
 	charset: 'Bảng mã của tài nguyên được liên kết đến',
 	cssClasses: 'Lớp Stylesheet',
+	download: 'Force Download', // MISSING
+	displayText: 'Display Text', // MISSING
 	emailAddress: 'Thư điện tử',
 	emailBody: 'Nội dung thông điệp',
 	emailSubject: 'Tiêu đề thông điệp',
@@ -33,7 +36,9 @@ CKEDITOR.plugins.setLang( 'link', 'vi', {
 	noAnchors: '(Không có điểm neo nào trong tài liệu)',
 	noEmail: 'Hãy đưa vào địa chỉ thư điện tử',
 	noUrl: 'Hãy đưa vào đường dẫn liên kết (URL)',
+	noTel: 'Please type the phone number', // MISSING
 	other: '<khác>',
+	phoneNumber: 'Phone number', // MISSING
 	popupDependent: 'Phụ thuộc (Netscape)',
 	popupFeatures: 'Đặc điểm của cửa sổ Popup',
 	popupFullScreen: 'Toàn màn hình (IE)',
@@ -58,6 +63,7 @@ CKEDITOR.plugins.setLang( 'link', 'vi', {
 	toAnchor: 'Neo trong trang này',
 	toEmail: 'Thư điện tử',
 	toUrl: 'URL',
+	toPhone: 'Phone', // MISSING
 	toolbar: 'Chèn/Sửa liên kết',
 	type: 'Kiểu liên kết',
 	unlink: 'Xoá liên kết',

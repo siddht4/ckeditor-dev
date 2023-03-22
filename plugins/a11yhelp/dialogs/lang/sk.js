@@ -1,6 +1,6 @@
 /**
- * @license Copyright (c) 2003-2016, CKSource - Frederico Knabben. All rights reserved.
- * For licensing, see LICENSE.md or http://ckeditor.com/license
+ * @license Copyright (c) 2003-2023, CKSource Holding sp. z o.o. All rights reserved.
+ * For licensing, see LICENSE.md or https://ckeditor.com/legal/ckeditor-oss-license
  */
 
 CKEDITOR.plugins.setLang( 'a11yhelp', 'sk', {
@@ -12,13 +12,13 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sk', {
 		items: [
 			{
 			name: 'Lišta nástrojov editora',
-			legend: 'Stlačte ${toolbarFocus} pre navigáciu na lištu nástrojov. Medzi ďalšou a predchádzajúcou lištou nástrojov sa pohybujete s TAB a SHIFT+TAB. Medzi ďalším a predchádzajúcim tlačidlom na lište nástrojov sa pohybujete s pravou šípkou a ľavou šípkou. Stlačte medzerník alebo ENTER pre aktiváciu tlačidla lišty nástrojov.'
+			legend: 'Stlačením ${toolbarFocus} prejdete na panel nástrojov. Medzi ďalšou a predchádzajúcou skupinou sa pohybujete s TAB a SHIFT+TAB. Medzi ďalším a predchádzajúcim tlačidlom na panelu nástrojov sa pohybujete s ŠÍPKA VPRAVO a ŠÍPKA VĽAVO. Stlačte medzerník alebo ENTER pre aktiváciu tlačidla lišty nástrojov. Po aktivácii tlačidla sa fókus presunie späť do editačnej oblasti.'
 		},
 
 			{
 			name: 'Editorový dialóg',
 			legend:
-				'Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.'  // MISSING
+				'V dialógovom okne stlačte TAB pre presun na ďalší prvok, SHIFT+TAB pre presun na predchádzajúci prvok, ENTER pre odoslanie, ESC pre zrušenie. Keď má dialógové okno viacero kariet, zoznam kariet dosiahnete buď stlačením ALT+F10 alebo s TAB v príslušnom poradí kariet. So zameraným zoznamom kariet sa pohybujte k ďalšej alebo predchádzajúcej karte cez PRAVÚ a ĽAVÚ ŠÍPKU.' 
 		},
 
 			{
@@ -79,29 +79,26 @@ CKEDITOR.plugins.setLang( 'a11yhelp', 'sk', {
 			{
 			name: 'Pomoc prístupnosti',
 			legend: 'Stlačte ${a11yHelp}'
+		},
+			{
+			name: 'Vložiť ako čistý text',
+			legend: 'Stlačte ${pastetext}',
+			legendEdge: 'Stlačte ${pastetext} a potom ${paste}'
 		}
 		]
 	}
 	],
-	backspace: 'Backspace',
 	tab: 'Tab',
-	enter: 'Enter',
-	shift: 'Shift',
-	ctrl: 'Ctrl',
-	alt: 'Alt',
 	pause: 'Pause',
 	capslock: 'Caps Lock',
 	escape: 'Escape',
 	pageUp: 'Stránka hore',
 	pageDown: 'Stránka dole',
-	end: 'End',
-	home: 'Home',
 	leftArrow: 'Šípka naľavo',
 	upArrow: 'Šípka hore',
 	rightArrow: 'Šípka napravo',
 	downArrow: 'Šípka dole',
 	insert: 'Insert',
-	'delete': 'Delete',
 	leftWindowKey: 'Ľavé Windows tlačidlo',
 	rightWindowKey: 'Pravé Windows tlačidlo',
 	selectKey: 'Tlačidlo Select',

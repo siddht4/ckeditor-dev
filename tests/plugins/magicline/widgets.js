@@ -1,4 +1,4 @@
-/* bender-tags: editor,unit,magicline */
+/* bender-tags: editor,magicline */
 /* bender-ckeditor-plugins: magicline,widget */
 /* global widgetTestsTools */
 
@@ -149,7 +149,7 @@
 			editor = this.editorBot.editor;
 			doc = editor.document;
 
-			var backdoor = editor.plugins.magicline.backdoor;
+			var backdoor = editor._.magiclineBackdoor;
 
 			this.editorBot.setData( html, function() {
 				if ( cfg.that.element )
@@ -184,7 +184,7 @@
 			editor = this.editorBot.editor;
 			doc = editor.document;
 
-			var backdoor = editor.plugins.magicline.backdoor;
+			var backdoor = editor._.magiclineBackdoor;
 
 			this.editorBot.setData( html, function() {
 				var widget = cfg.widget();
@@ -749,7 +749,7 @@
 			}
 		} )
 
-		/* See #12474
+		/* See https://dev.ckeditor.com/ticket/12474
 
 		// --- ACF in nested ------------------------------------------------------------------------------------
 
